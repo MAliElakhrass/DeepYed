@@ -214,7 +214,7 @@ class PlayChess():
 
     def select_move(self, depth):
         try:
-            move = chess.polyglot.MemoryMappedReader('Perfect2017-SF12.bin').weighted_choice(board=self.board).move
+            move = chess.polyglot.MemoryMappedReader('./../books/Perfect2017-SF12.bin').weighted_choice(board=self.board).move
             print("From Book")
             return move
         except:
@@ -236,9 +236,8 @@ class PlayChess():
 
             # Return random move
             if best_move == chess.Move.null():
-                no_possible_moves = self.board.legal_moves.count()
-                idx = random.randint(0, no_possible_moves)
-                return self.board.legal_moves[idx]
+                legal_moves_iterator = self.board.generate_legal_moves()
+                best_move = next(x for x in legal_moves_iterator)
 
             return best_move
 
