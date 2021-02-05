@@ -6,7 +6,6 @@ import chess.pgn
 import chess.polyglot
 import chess.engine
 import datetime
-import random
 
 # Piece Square Tables
 # Value from https://www.chessprogramming.org/Simplified_Evaluation_Function
@@ -173,8 +172,13 @@ class PlayChess():
         else:
             return -heuristic
 
-    # https://www.chessprogramming.org/Quiescence_Search
     def quiesce(self, alpha, beta):
+        """
+        https://www.chessprogramming.org/Quiescence_Search
+        :param alpha:
+        :param beta:
+        :return:
+        """
         stand_pat = self.evaluate_board()
 
         if stand_pat >= beta:
@@ -195,8 +199,14 @@ class PlayChess():
 
         return alpha
 
-    # https://www.chessprogramming.org/Alpha-Beta
     def alphabeta(self, alpha, beta, depth):
+        """
+        https://www.chessprogramming.org/Alpha-Beta
+        :param alpha:
+        :param beta:
+        :param depth:
+        :return:
+        """
         if depth == 0:
             return self.quiesce(alpha, beta)
 
@@ -215,7 +225,6 @@ class PlayChess():
     def select_move(self, depth):
         try:
             move = chess.polyglot.MemoryMappedReader('./../books/Perfect2017-SF12.bin').weighted_choice(board=self.board).move
-            print("From Book")
             return move
         except:
             best_move = chess.Move.null()
@@ -250,6 +259,4 @@ class PlayChess():
 
 if __name__ == "__main__":
     player = PlayChess()
-    # player.start_game()
     player.play_stockfish()
-
