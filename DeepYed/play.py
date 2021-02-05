@@ -1,11 +1,12 @@
 from PyQt5.QtWidgets import QApplication
-from Projet.Simple.MainWindow import MainWindow
+from Projet.DeepYed.MainWindow import MainWindow
 import chess
 import chess.svg
 import chess.pgn
 import chess.polyglot
 import chess.engine
 import datetime
+import random
 
 # Piece Square Tables
 # Value from https://www.chessprogramming.org/Simplified_Evaluation_Function
@@ -72,8 +73,8 @@ kingstable = [
 
 class PlayChess():
     def __init__(self):
-        self.board = chess.Board()
         self.history = []
+        self.board = chess.Board()
 
     def start_game(self):
         while True:
@@ -92,41 +93,36 @@ class PlayChess():
                 user_input = input("Entre un move")
                 user_move = chess.Move.from_uci(user_input)
                 self.board.push(user_move)
-            # self.board.push_san(user_input)
 
-    def evalute_stockfish(self):
-        engine = chess.engine.SimpleEngine.popen_uci('./../stockfish-12/stockfish_20090216_x64_bmi2.exe')
+    def play_stockfish(self):
+        engine = chess.engine.SimpleEngine.popen_uci('./../engines/stockfish-12/stockfish_20090216_x64_bmi2.exe')
         print("Engine Loaded")
 
         game = chess.pgn.Game()
-        game.headers["Event"] = "MATCH HISTORIQUE>"
+        game.headers["Event"] = "Test"
         game.headers["Site"] = "Hammad's PC"
         game.headers["Date"] = str(datetime.datetime.now().date())
         game.headers["Round"] = '1'
         game.headers["White"] = "DeepYed"
         game.headers["Black"] = "Stockfish12"
 
-        history = []
-        counter = 1
         while not self.board.is_game_over():
-            print("Move: ", counter)
             if self.board.turn:
-                print('White Turn')
+                print("DeepYed's Turn")
                 move = self.select_move(depth=3)
+                self.history.append(move)
                 self.board.push(move)
                 print(move)
             else:
-                print('Black Turn')
+                print("Stockfish's Turn")
                 result = engine.play(self.board, chess.engine.Limit(time=1))
-                history.append(result.move)
+                self.history.append(result.move)
                 self.board.push(result.move)
                 print(result.move)
 
-            counter += 1
-
         engine.close()
 
-        game.add_line(history)
+        game.add_line(self.history)
         game.headers["Result"] = str(self.board.result())
 
         print(game)
@@ -219,7 +215,7 @@ class PlayChess():
     def select_move(self, depth):
         try:
             move = chess.polyglot.MemoryMappedReader('Perfect2017-SF12.bin').weighted_choice(board=self.board).move
-            self.history.append(move)
+            print("From Book")
             return move
         except:
             best_move = chess.Move.null()
@@ -237,7 +233,12 @@ class PlayChess():
                     alpha = board_value
 
                 self.board.pop()
-            self.history.append(best_move)
+
+            # Return random move
+            if best_move == chess.Move.null():
+                no_possible_moves = self.board.legal_moves.count()
+                idx = random.randint(0, no_possible_moves)
+                return self.board.legal_moves[idx]
 
             return best_move
 
@@ -251,5 +252,5 @@ class PlayChess():
 if __name__ == "__main__":
     player = PlayChess()
     # player.start_game()
-    player.evalute_stockfish()
+    player.play_stockfish()
 
