@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QApplication
 from Projet.DeepYed.MainWindow import MainWindow
+from stockfish import Stockfish
 import chess
 import chess.svg
 import chess.pgn
@@ -88,14 +89,16 @@ class PlayChess():
                     user_move = chess.Move.from_uci(user_input)
                 self.board.push(user_move)
             except:
-                print('HMAR')
                 user_input = input("Entre un move")
                 user_move = chess.Move.from_uci(user_input)
                 self.board.push(user_move)
 
-    def play_stockfish(self):
-        engine = chess.engine.SimpleEngine.popen_uci('./../engines/stockfish-12/stockfish_20090216_x64_bmi2.exe')
-        print("Engine Loaded")
+    def play_engine(self, engine_name):
+        # engine = chess.engine.SimpleEngine.popen_uci(path)
+        # print("Engine Loaded")
+
+        stockfish = Stockfish('./../engines/stockfish-12/stockfish_20090216_x64_bmi2.exe',
+                              parameters={"Threads": 4, "Skill Level": 1})
 
         game = chess.pgn.Game()
         game.headers["Event"] = "Test"
@@ -103,7 +106,7 @@ class PlayChess():
         game.headers["Date"] = str(datetime.datetime.now().date())
         game.headers["Round"] = '1'
         game.headers["White"] = "DeepYed"
-        game.headers["Black"] = "Stockfish12"
+        game.headers["Black"] = engine_name
 
         while not self.board.is_game_over():
             if self.board.turn:
@@ -113,13 +116,20 @@ class PlayChess():
                 self.board.push(move)
                 print(move)
             else:
-                print("Stockfish's Turn")
+                print("{0}'s Turn".format(engine_name))
+                move = chess.Move.from_uci(self.play_stockfish(stockfish))
+                self.history.append(move)
+                self.board.push(move)
+                print(move)
+                """
+                print("{0}'s Turn", engine_name)
                 result = engine.play(self.board, chess.engine.Limit(time=1))
                 self.history.append(result.move)
                 self.board.push(result.move)
                 print(result.move)
+                """
 
-        engine.close()
+        # engine.close()
 
         game.add_line(self.history)
         game.headers["Result"] = str(self.board.result())
@@ -128,6 +138,13 @@ class PlayChess():
         print(game, file=open("resultat.pgn", "w"), end="\n\n")
 
         self.show_board()
+
+    def play_stockfish(self, stockfish):
+        # engine = chess.engine.SimpleEngine.popen_uci(stockfish.)
+        fen = self.board.fen()
+        stockfish.set_fen_position(fen)
+
+        return stockfish.get_best_move_time(1000)
 
     def evaluate_board(self):
         if self.board.is_checkmate():
@@ -259,4 +276,6 @@ class PlayChess():
 
 if __name__ == "__main__":
     player = PlayChess()
-    player.play_stockfish()
+    # stockfish_engine = './../engines/stockfish-12/stockfish_20090216_x64_bmi2.exe'
+    # ufim_engine = './../engines/ufim/ufim802.exe'
+    player.play_engine('Stockfish')
