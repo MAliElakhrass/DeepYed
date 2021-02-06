@@ -12,63 +12,63 @@ import datetime
 # Value from https://www.chessprogramming.org/Simplified_Evaluation_Function
 pawntable = [
     0, 0, 0, 0, 0, 0, 0, 0,
-    5, 10, 10, -20, -20, 10, 10, 5,
-    5, -5, -10, 0, 0, -10, -5, 5,
-    0, 0, 0, 20, 20, 0, 0, 0,
-    5, 5, 10, 25, 25, 10, 5, 5,
-    10, 10, 20, 30, 30, 20, 10, 10,
-    50, 50, 50, 50, 50, 50, 50, 50,
+    -31,   8,  -7, -37, -36, -14,   3, -31,
+    -22,   9,   5, -11, -10,  -2,   3, -19,
+    -26, 3, 10, 9, 6, 1, 0, -23,
+    -17,  16,  -2,  15,  14,   0,  15, -13,
+    7,  29,  21,  44,  40,  31,  44,   7,
+    78,  83,  86,  73, 102,  82,  85,  90,
     0, 0, 0, 0, 0, 0, 0, 0]
 
 knightstable = [
-    -50, -40, -30, -30, -30, -30, -40, -50,
-    -40, -20, 0, 5, 5, 0, -20, -40,
-    -30, 5, 10, 15, 15, 10, 5, -30,
-    -30, 0, 15, 20, 20, 15, 0, -30,
-    -30, 5, 15, 20, 20, 15, 5, -30,
-    -30, 0, 10, 15, 15, 10, 0, -30,
-    -40, -20, 0, 0, 0, 0, -20, -40,
-    -50, -40, -30, -30, -30, -30, -40, -50]
+    -74, -23, -26, -24, -19, -35, -22, -69,
+    -23, -15,   2,   0,   2,   0, -23, -20,
+    -18,  10,  13,  22,  18,  15,  11, -14,
+    -1,   5,  31,  21,  22,  35,   2,   0,
+    24,  24,  45,  37,  33,  41,  25,  17,
+    10,  67,   1,  74,  73,  27,  62,  -2,
+    -3,  -6, 100, -36,   4,  62,  -4, -14,
+    -66, -53, -75, -75, -10, -55, -58, -70]
 
 bishopstable = [
-    -20, -10, -10, -10, -10, -10, -10, -20,
-    -10, 5, 0, 0, 0, 0, 5, -10,
-    -10, 10, 10, 10, 10, 10, 10, -10,
-    -10, 0, 10, 10, 10, 10, 0, -10,
-    -10, 5, 5, 10, 10, 5, 5, -10,
-    -10, 0, 5, 10, 10, 5, 0, -10,
-    -10, 0, 0, 0, 0, 0, 0, -10,
-    -20, -10, -10, -10, -10, -10, -10, -20]
+    -7,   2, -15, -12, -14, -15, -10, -10,
+    19,  20,  11,   6,   7,   6,  20,  16,
+    14,  25,  24,  15,   8,  25,  20,  15,
+    13,  10,  17,  23,  17,  16,   0,   7,
+    25,  17,  20,  34,  26,  25,  15,  10,
+    -9,  39, -32,  41,  52, -10,  28, -14,
+    -11,  20,  35, -42, -39,  31,   2, -22,
+    -59, -78, -82, -76, -23,-107, -37, -50]
 
 rookstable = [
-    0, 0, 0, 5, 5, 0, 0, 0,
-    -5, 0, 0, 0, 0, 0, 0, -5,
-    -5, 0, 0, 0, 0, 0, 0, -5,
-    -5, 0, 0, 0, 0, 0, 0, -5,
-    -5, 0, 0, 0, 0, 0, 0, -5,
-    -5, 0, 0, 0, 0, 0, 0, -5,
-    5, 10, 10, 10, 10, 10, 10, 5,
-    0, 0, 0, 0, 0, 0, 0, 0]
+    -30, -24, -18,   5,  -2, -18, -31, -32,
+    -53, -38, -31, -26, -29, -43, -44, -53,
+    -42, -28, -42, -25, -25, -35, -26, -46,
+    -28, -35, -16, -21, -13, -29, -46, -30,
+    0,   5,  16,  13,  18,  -4,  -9,  -6,
+    19,  35,  28,  33,  45,  27,  25,  15,
+    55,  29,  56,  67,  55,  62,  34,  60,
+    35,  29,  33,   4,  37,  33,  56,  50]
 
 queenstable = [
-    -20, -10, -10, -5, -5, -10, -10, -20,
-    -10, 0, 0, 0, 0, 0, 0, -10,
-    -10, 5, 5, 5, 5, 5, 0, -10,
-    0, 0, 5, 5, 5, 5, 0, -5,
-    -5, 0, 5, 5, 5, 5, 0, -5,
-    -10, 0, 5, 5, 5, 5, 0, -10,
-    -10, 0, 0, 0, 0, 0, 0, -10,
-    -20, -10, -10, -5, -5, -10, -10, -20]
+    -39, -30, -31, -13, -31, -36, -34, -42,
+    -36, -18,   0, -19, -15, -15, -21, -38,
+    -30,  -6, -13, -11, -16, -11, -16, -27,
+    -14, -15,  -2,  -5,  -1, -10, -20, -22,
+    1, -16,  22,  17,  25,  20, -13,  -6,
+    -2,  43,  32,  60,  72,  63,  43,   2,
+    14,  32,  60, -10,  20,  76,  57,  24,
+    6,   1,  -8,-104,  69,  24,  88,  26]
 
 kingstable = [
-    20, 30, 10, 0, 0, 10, 30, 20,
-    20, 20, 0, 0, 0, 0, 20, 20,
-    -10, -20, -20, -20, -20, -20, -20, -10,
-    -20, -30, -30, -40, -40, -30, -30, -20,
-    -30, -40, -40, -50, -50, -40, -40, -30,
-    -30, -40, -40, -50, -50, -40, -40, -30,
-    -30, -40, -40, -50, -50, -40, -40, -30,
-    -30, -40, -40, -50, -50, -40, -40, -30]
+    17,  30,  -3, -14,   6,  -1,  40,  18,
+    -4,   3, -14, -50, -57, -18,  13,   4,
+    -47, -42, -43, -79, -64, -32, -29, -32,
+    -55, -43, -52, -28, -51, -47,  -8, -50,
+    -55,  50,  11,  -4, -19,  13,   0, -49,
+    -62,  12, -57,  44, -67,  28,  37, -31,
+    -32,  10,  55,  56,  56,  55,  10,   3,
+    4,  54,  47, -99, -99,  60,  83, -62]
 
 
 class PlayChess():
@@ -93,10 +93,7 @@ class PlayChess():
                 user_move = chess.Move.from_uci(user_input)
                 self.board.push(user_move)
 
-    def play_engine(self, engine_name):
-        # engine = chess.engine.SimpleEngine.popen_uci(path)
-        # print("Engine Loaded")
-
+    def play_engine(self):
         stockfish = Stockfish('./../engines/stockfish-12/stockfish_20090216_x64_bmi2.exe',
                               parameters={"Threads": 4, "Skill Level": 1})
 
@@ -104,9 +101,9 @@ class PlayChess():
         game.headers["Event"] = "Test"
         game.headers["Site"] = "Hammad's PC"
         game.headers["Date"] = str(datetime.datetime.now().date())
-        game.headers["Round"] = '1'
+        game.headers["Round"] = '3'
         game.headers["White"] = "DeepYed"
-        game.headers["Black"] = engine_name
+        game.headers["Black"] = 'Stockfish'
 
         while not self.board.is_game_over():
             if self.board.turn:
@@ -116,35 +113,25 @@ class PlayChess():
                 self.board.push(move)
                 print(move)
             else:
-                print("{0}'s Turn".format(engine_name))
+                print("Stockfish's Turn")
                 move = chess.Move.from_uci(self.play_stockfish(stockfish))
                 self.history.append(move)
                 self.board.push(move)
                 print(move)
-                """
-                print("{0}'s Turn", engine_name)
-                result = engine.play(self.board, chess.engine.Limit(time=1))
-                self.history.append(result.move)
-                self.board.push(result.move)
-                print(result.move)
-                """
-
-        # engine.close()
 
         game.add_line(self.history)
         game.headers["Result"] = str(self.board.result())
 
         print(game)
-        print(game, file=open("resultat.pgn", "w"), end="\n\n")
+        print(game, file=open("round_3.pgn", "w"), end="\n\n")
 
         self.show_board()
 
     def play_stockfish(self, stockfish):
-        # engine = chess.engine.SimpleEngine.popen_uci(stockfish.)
         fen = self.board.fen()
         stockfish.set_fen_position(fen)
 
-        return stockfish.get_best_move_time(1000)
+        return stockfish.get_best_move_time(100)
 
     def evaluate_board(self):
         if self.board.is_checkmate():
@@ -276,6 +263,4 @@ class PlayChess():
 
 if __name__ == "__main__":
     player = PlayChess()
-    # stockfish_engine = './../engines/stockfish-12/stockfish_20090216_x64_bmi2.exe'
-    # ufim_engine = './../engines/ufim/ufim802.exe'
-    player.play_engine('Stockfish')
+    player.play_engine()
