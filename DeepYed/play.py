@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication
-from Projet.DeepYed.MainWindow import MainWindow
+from DeepYed.MainWindow import MainWindow
 from stockfish import Stockfish
 import chess
 import chess.svg
@@ -75,6 +75,7 @@ class PlayChess():
     def __init__(self):
         self.history = []
         self.board = chess.Board()
+        self.transposition_table = dict({})
 
     def start_game(self):
         while True:
@@ -203,7 +204,7 @@ class PlayChess():
 
         return alpha
 
-    def alphabeta(self, alpha, beta, depth):
+    def negamax_with_memory(self, alpha, beta, depth):
         """
         https://www.chessprogramming.org/Alpha-Beta
         :param alpha:
@@ -211,12 +212,25 @@ class PlayChess():
         :param depth:
         :return:
         """
+        hash_board = chess.polyglot.ZobristHasher(chess.polyglot.POLYGLOT_RANDOM_ARRAY).hash_board(self.board)
+
+        # Transposition table lookup
+        if hash_board in self.transposition_table:
+            data = self.transposition_table[hash_board]
+            if data.lower_bound >= beta:
+                return data.lower_bound
+            if data.upper_bound <= alpha:
+                return data.upper_bound
+
+            alpha = max(alpha, data.lower_bound)
+            beta = min(beta, data.upper_bound)
+
         if depth == 0:
             return self.quiesce(alpha, beta)
 
         for move in self.board.legal_moves:
             self.board.push(move)
-            score = -self.alphabeta(-beta, -alpha, depth-1)
+            score = -self.negamax_with_memory(-beta, -alpha, depth-1)
             self.board.pop()
 
             if score >= beta:
@@ -232,12 +246,12 @@ class PlayChess():
             return move
         except:
             best_move = chess.Move.null()
-            best_value = -99999
-            alpha = -100000
-            beta = 100000
+            best_value = -9999
+            alpha = -10000
+            beta = 10000
             for move in self.board.legal_moves:
                 self.board.push(move)
-                board_value = -self.alphabeta(-beta, -alpha, depth-1)
+                board_value = -self.negamax_with_memory(-beta, -alpha, depth-1)
 
                 if board_value > best_value:
                     best_value = board_value
