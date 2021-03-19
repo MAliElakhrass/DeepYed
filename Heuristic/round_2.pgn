@@ -1,0 +1,10 @@
+[Event "Test"]
+[Site "Hammad's PC"]
+[Date "2021-02-06"]
+[Round "2"]
+[White "DeepYed"]
+[Black "Stockfish"]
+[Result "0-1"]
+
+1. d4 d5 2. c4 dxc4 3. Nf3 Nf6 4. e3 b5 5. Be2 Bb7 6. O-O g6 7. Nc3 Qd7 8. Ne5 Qc8 9. Nxb5 Bg7 10. Bxc4 e6 11. Bd2 a6 12. Nc3 O-O 13. Qc2 Nbd7 14. Rad1 Rd8 15. f4 Nxe5 16. fxe5 Nh5 17. g4 c5 18. Ne2 cxd4 19. Nxd4 Bxe5 20. gxh5 gxh5 21. Ba5 Rd7 22. Bb6 Qf8 23. Nxe6 Qc8 24. Rxd7 Qc6 25. Rfxf7 Qh1+ 26. Kf2 Qxh2+ 27. Ke1 Qxc2 28. b3 Bc3+ 29. Rd2 Qxd2+ 30. Kf1 Qc1+ 31. Ke2 Qd2+ 32. Kf1 Qd1+ 33. Kf2 Qe1# 0-1
+

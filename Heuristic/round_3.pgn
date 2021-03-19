@@ -1,0 +1,10 @@
+[Event "Test"]
+[Site "Hammad's PC"]
+[Date "2021-02-06"]
+[Round "3"]
+[White "DeepYed"]
+[Black "Stockfish"]
+[Result "1/2-1/2"]
+
+1. Nf3 Nf6 2. g3 c5 3. d4 e6 4. Bg2 d5 5. O-O Nc6 6. c4 dxc4 7. Qa4 cxd4 8. Qxc4 Be7 9. Rd1 e5 10. Ng5 O-O 11. Bxc6 bxc6 12. Qxc6 Bd7 13. Qb7 Bf5 14. e4 Bg4 15. f3 Bd7 16. f4 Rb8 17. Qxa7 Ng4 18. h3 Ra8 19. Qb7 Rb8 20. Qa7 Ra8 21. Qb7 Rb8 22. Qa7 Ra8 23. Qb7 Rb8 24. Qa7 Ra8 25. Qb7 Ba4 26. b3 exf4 27. hxg4 Rb8 28. Qd5 h6 29. Bxf4 Rc8 30. Nxf7 Bxb3 31. Nxh6+ Kh7 32. axb3 gxh6 33. Rxd4 Bc5 34. Bd6 Bb6 35. Qb7+ Rc7 36. Bxc7 Bxd4+ 37. Kh1 Rf1+ 38. Kg2 Rg1+ 39. Kh2 Qd7 40. g5 Qf7 41. g6+ Qxg6 42. Bb6+ Qg7 43. Qxg7+ Bxg7 44. Kxg1 Bf6 45. Ra8 Kg7 46. Nd2 Bc3 47. Ra7+ Kf6 48. Nc4 Kg5 49. Nd6 Bd2 50. Rg7+ Kf6 51. Bd4+ Ke6 52. Rg6+ Kd7 53. e5 h5 54. Rg7+ Kc6 55. Rb7 Kd5 56. Nf5 Kc6 57. Rb6+ Kd5 58. Rb5+ Kc6 59. Rb6+ Kd5 60. Rb5+ Kc6 61. Rb6+ Kd5 62. Rb5+ Kc6 63. Rb6+ Kd5 64. Rb5+ Kc6 65. Rb6+ 1/2-1/2
+

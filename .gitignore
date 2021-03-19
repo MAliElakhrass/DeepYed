@@ -134,9 +134,5 @@ dmypy.json
 # Other
 engines/
 books/
-data/
 
-# Chess related
-*.pgn
-
-
+NeuralNetwork/data/
