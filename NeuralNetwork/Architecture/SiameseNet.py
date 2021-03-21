@@ -20,6 +20,8 @@ class SiameseNet(nn.Module):
                 # If not the last layer
                 if i != len(self.size_inputs) - 2:
                     layers += [nn.ReLU()]
+                else:
+                    layers += [nn.Sigmoid()]
 
         return nn.Sequential(*layers)
 
