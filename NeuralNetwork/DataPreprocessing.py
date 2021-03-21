@@ -1,6 +1,8 @@
 import numpy as np
 import chess.pgn
 import re
+import memory_profiler
+import time
 
 N_SQUARES = 64
 N_SIDES = 2
@@ -109,12 +111,23 @@ class DataPreprocessing:
         bitboard = self.get_bitboard(board)
         return board, bitboard
 
+    def save_results(self, game_idx, directory="./PreprocessedData/"):
+        """
+        Saves the bitboards and the labels as numpy files
+
+        :param directory: The directory path where the numpy arrays will be saved
+
+        """
+        if directory == "./PreprocessedData/Bitboards/":
+            np_to_save = np.array(self.bitboards)
+        else:
+            np_to_save = np.array(self.labels)
+        np.save(directory + str(game_idx), np_to_save)
+
     def fill_all_moves_data(self, game):
         """
         Adds the bitboard after every move of a game and the outcome of the game
-
         :param game: The current parsed game
-
         """
         # An iterable over the main moves after the current game
         all_moves = game.mainline_moves()
@@ -127,36 +140,30 @@ class DataPreprocessing:
             self.bitboards.append(bitboard)
             self.labels.append(game_outcome)
 
-    def save_results(self, directory="./PreprocessedData/"):
-        """
-        Saves the bitboards and the labels as numpy files
-
-        :param directory: The directory path where the numpy arrays will be saved
-
-        """
-        np_bitboards = np.array(self.bitboards)
-        np_labels = np.array(self.labels)
-        np.save(directory + "Bitboards", np_bitboards)
-        np.save(directory + "Labels", np_labels)
-
     def preprocess_games(self):
         """
         Preprocesses the games to extract he bitboards and the outcomes of every game
-
         """
         num_games = 0
-        while True:
+        for _ in range(200):
             if num_games % 10 == 0:
                 print(num_games)
                 print(len(self.bitboards))
             num_games += 1
             read_game = chess.pgn.read_game(self.data)
-            if read_game is None:
-                break
+
             self.fill_all_moves_data(game=read_game)
-            self.save_results()
+            self.save_results(game_idx=num_games, directory="./PreprocessedData/Bitboards/")
+            self.save_results(game_idx=num_games, directory="./PreprocessedData/Labels/")
 
 
 if __name__ == "__main__":
     data_preprocessing = DataPreprocessing()
+    m1 = memory_profiler.memory_usage()
+    t1 = time.time()
     data_preprocessing.preprocess_games()
+    t2 = time.time()
+    m2 = memory_profiler.memory_usage()
+    time_diff = t2 - t1
+    mem_diff = m2[0] - m1[0]
+    print(f"It took {time_diff} Secs and {mem_diff} Mb to execute the method")

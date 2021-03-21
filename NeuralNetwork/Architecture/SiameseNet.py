@@ -25,12 +25,9 @@ class SiameseNet(nn.Module):
 
         return nn.Sequential(*layers)
 
-
     def forward(self, input_features):
         result = self.fc_layers(input_features)
         return result
-
-
 
 
 if __name__ == "__main__":
