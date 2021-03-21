@@ -21,7 +21,7 @@ class SiameseNet(nn.Module):
                 if i != len(self.size_inputs) - 2:
                     layers += [nn.ReLU()]
                 else:
-                    layers += [nn.Sigmoid()]
+                    layers += [nn.ReLU()]
 
         return nn.Sequential(*layers)
 
