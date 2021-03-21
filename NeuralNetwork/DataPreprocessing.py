@@ -3,12 +3,14 @@ import chess.pgn
 import re
 import memory_profiler
 import time
+from itertools import zip_longest
 
 N_SQUARES = 64
 N_SIDES = 2
 N_PIECES = 6
 N_EXTRA_BITS = 5
 N_GAMES = 1228086
+CHUNK_SIZE = 5000
 
 
 class DataPreprocessing:
@@ -19,6 +21,7 @@ class DataPreprocessing:
         self.n_pieces = N_PIECES
         self.n_extra_bits = N_EXTRA_BITS
         self.n_games = N_GAMES
+        self.chunk_size = CHUNK_SIZE
 
         self.bitboards = []
         self.labels = []
@@ -131,9 +134,11 @@ class DataPreprocessing:
         """
         # An iterable over the main moves after the current game
         all_moves = game.mainline_moves()
+
         # Get the outcome of the game
         game_outcome = self.retrieve_label(game)
         board = game.board()
+
         # Generate bitboard for every move and append the results
         for move in all_moves:
             board, bitboard = self.update_per_move(board, move)
@@ -145,16 +150,21 @@ class DataPreprocessing:
         Preprocesses the games to extract he bitboards and the outcomes of every game
         """
         num_games = 0
-        for _ in range(200):
+        chunk_size = 0
+        for _ in range(self.n_games):
             if num_games % 10 == 0:
                 print(num_games)
                 print(len(self.bitboards))
             num_games += 1
             read_game = chess.pgn.read_game(self.data)
-
+            chunk_size += 1
             self.fill_all_moves_data(game=read_game)
-            self.save_results(game_idx=num_games, directory="./PreprocessedData/Bitboards/")
-            self.save_results(game_idx=num_games, directory="./PreprocessedData/Labels/")
+            if chunk_size == self.chunk_size or num_games == (self.n_games - (self.n_games % self.chunk_size)):
+                chunk_size = 0
+                self.save_results(game_idx=num_games, directory="./PreprocessedData/Bitboards/")
+                self.save_results(game_idx=num_games, directory="./PreprocessedData/Labels/")
+                self.bitboards.clear()
+                self.labels.clear()
 
 
 if __name__ == "__main__":
