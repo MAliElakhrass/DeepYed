@@ -145,12 +145,14 @@ class DataPreprocessing:
 
         """
         num_games = 0
-        for _ in range(self.n_games):
+        while True:
             if num_games % 10 == 0:
                 print(num_games)
                 print(len(self.bitboards))
             num_games += 1
             read_game = chess.pgn.read_game(self.data)
+            if read_game is None:
+                break
             self.fill_all_moves_data(game=read_game)
             self.save_results()
 
