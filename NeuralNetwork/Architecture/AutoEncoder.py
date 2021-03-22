@@ -31,6 +31,8 @@ class AutoEncoder(nn.Module):
             if self.size_inputs[i - 1] is not None:
                 n_out_features = self.size_inputs[i - 1]
                 n_in_features = self.size_inputs[i]
+                if n_in_features > n_out_features:
+                    break
                 layers += [
                     nn.Linear(in_features=n_in_features, out_features=n_out_features),
                     nn.ReLU()]

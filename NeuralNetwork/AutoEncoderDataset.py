@@ -8,7 +8,7 @@ import numpy as np
 class AutoEncoderDataset(Dataset):
     def __init__(self, mode="train"):
         self.mode = mode
-        self.bitboards_directory = "./PreprocessedData/Bitboards/"
+        self.bitboards_directory = "NeuralNetwork/PreprocessedData/Bitboards/"
         self.bitboards_lenghts = self.get_file_names()
 
     def __getitem__(self, index):
@@ -19,7 +19,7 @@ class AutoEncoderDataset(Dataset):
         groud_truth = 0
         input = torch.from_numpy(self.data[real_index]).type(torch.FloatTensor)
 
-        return (input, groud_truth)
+        return input, groud_truth
 
     def __len__(self):
 
@@ -27,6 +27,7 @@ class AutoEncoderDataset(Dataset):
 
     def get_file_names(self):
         file_names = []
+        print(os.getcwd())
         for file in os.listdir(self.bitboards_directory):
             filename, file_extension = os.path.splitext(file)
             file_names.append(int(filename))
@@ -44,7 +45,7 @@ class AutoEncoderDataset(Dataset):
                 continue
             else:
                 real_index = index - sum_to_index - 1
-                bitboards = np.load(self.bitboards_directory + str(n_bitboards) + ".npy", allow_pickle=True)
+                bitboards = np.load(self.bitboards_directory + str(n_bitboards) + ".npy")
                 break
         return bitboards, real_index
 

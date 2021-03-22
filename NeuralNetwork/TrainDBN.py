@@ -4,6 +4,8 @@ sys.path.append('../DeepYed/NeuralNetwork/')
 
 import argparse
 from tqdm import tqdm
+import numpy as np
+import os
 
 import torch
 from torch.utils.data import DataLoader
@@ -15,10 +17,11 @@ from Architecture.AutoEncoder import AutoEncoder
 
 
 
+
 def train(args):
     train_dataset = AutoEncoderDataset(
         mode="train")
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
     autoencoder = AutoEncoder().to(device)
     optimizer = Adam(autoencoder.parameters(), lr=args.lr)
 
@@ -30,17 +33,17 @@ def train(args):
         with tqdm(total=len(train_loader), ascii=True) as training_bar:
             training_bar.set_description(f'[Training] Epoch {epoch + 1}')
             training_loss = 0
-            for batch, (input, _) in enumerate(train_loader):
+            for batch_id, (input, _) in enumerate(train_loader):
                 input = input.to(device)
                 optimizer.zero_grad()
                 decoder_output, encoder_output = autoencoder(input)
+                print(decoder_output.shape)
                 loss = bce_loss(decoder_output, input)
 
                 loss.backward()
                 training_loss += loss.item()
                 optimizer.step()
 
-                loss_train_batch.append(loss.item())
                 print('====> Epoch: {} Average loss: {:.4f}'.format(
                     epoch, training_loss / len(train_loader.dataset)))
 
@@ -84,8 +87,8 @@ if __name__ == "__main__":
                                                                   'decay, 0.98')
 
     parser.add_argument('--epochs', type=int, default=10, help='The number of epochs to train, 10')
-    parser.add_argument('--batch-size', type=int, default=128, help='The batch size of the input, 128')
-    parser.add_argument('--num_workers', default=10, type=int)
+    parser.add_argument('--batch-size', type=int, default=1, help='The batch size of the input, 1')
+
     parser.add_argument('--checkpoint_path', default='Checkpoints/top_autoencoder.pth.tar', type=str)
     parser.add_argument('--train', default=True, action='store_true')
     parser.add_argument('--eval', default=False, action='store_true')
