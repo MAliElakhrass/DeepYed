@@ -150,6 +150,7 @@ class DataPreprocessing:
         Preprocesses the games to extract he bitboards and the outcomes of every game
         """
         num_games = 0
+        num_bitboards = 0
         chunk_size = 0
         for _ in range(self.n_games):
             if num_games % 10 == 0:
@@ -159,10 +160,12 @@ class DataPreprocessing:
             read_game = chess.pgn.read_game(self.data)
             chunk_size += 1
             self.fill_all_moves_data(game=read_game)
+            # Saving after chunk_size games with the name of the file being the number of bitboards where we're at
             if chunk_size == self.chunk_size or num_games == (self.n_games - (self.n_games % self.chunk_size)):
                 chunk_size = 0
-                self.save_results(game_idx=num_games, directory="./PreprocessedData/Bitboards/")
-                self.save_results(game_idx=num_games, directory="./PreprocessedData/Labels/")
+                num_bitboards += len(self.bitboards)
+                self.save_results(game_idx=num_bitboards, directory="./PreprocessedData/Bitboards/")
+                self.save_results(game_idx=num_bitboards, directory="./PreprocessedData/Labels/")
                 self.bitboards.clear()
                 self.labels.clear()
 

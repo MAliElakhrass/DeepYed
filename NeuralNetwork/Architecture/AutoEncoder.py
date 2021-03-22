@@ -2,6 +2,7 @@ from torch import nn
 
 INPUT_FEATURES = 773
 
+
 # The DBN(Pos2Vec) implementation
 class AutoEncoder(nn.Module):
     def __init__(self):
@@ -40,8 +41,6 @@ class AutoEncoder(nn.Module):
         encoder_result = self.encoder_layers(input_features.view(-1, 773))
         decoder_result = self.decoder_layers(encoder_result)
         return decoder_result, encoder_result
-
-
 
 
 if __name__ == "__main__":

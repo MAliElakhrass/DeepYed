@@ -136,3 +136,5 @@ engines/
 books/
 
 NeuralNetwork/data/
+NeuralNetwork/PreprocessedData/
+NeuralNetwork/Checkpoints/
