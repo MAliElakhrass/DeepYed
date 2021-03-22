@@ -1,5 +1,7 @@
 import torch
 from torch.utils.data import Dataset
+import memory_profiler
+import time
 
 import os
 import numpy as np
@@ -10,14 +12,17 @@ class AutoEncoderDataset(Dataset):
         self.mode = mode
         self.bitboards_directory = "NeuralNetwork/PreprocessedData/Bitboards/"
         self.bitboards_lenghts = self.get_file_names()
+        self.loaded_data = []
+        self.is_loaded = False
+        self.max_index = 0
 
     def __getitem__(self, index):
-        self.data, real_index = self.get_data(index)
+        self.loaded_data, real_index = self.get_data(index)
 
         # It expects a tuple, therefore I added a 0 as the second element since the ground truth
         # is not useful for the autoencoder
         groud_truth = 0
-        input = torch.from_numpy(self.data[real_index]).type(torch.FloatTensor)
+        input = torch.from_numpy(self.loaded_data[real_index]).type(torch.FloatTensor)
 
         return input, groud_truth
 
@@ -36,18 +41,20 @@ class AutoEncoderDataset(Dataset):
         return file_names
 
     def get_data(self, index):
-        bitboards = []
-        sum_to_index = 0
         real_index = 0
-        for n_bitboards in self.bitboards_lenghts:
-            if index > n_bitboards:
-                sum_to_index = n_bitboards
-                continue
-            else:
-                real_index = index - sum_to_index - 1
-                bitboards = np.load(self.bitboards_directory + str(n_bitboards) + ".npy")
-                break
-        return bitboards, real_index
+        if index < self.max_index:
+            return self.loaded_data, index - self.max_index - 1
+        else:
+            for n_bitboards in self.bitboards_lenghts:
+                if index > n_bitboards:
+                    self.max_index = n_bitboards
+                    continue
+                else:
+                    real_index = index - self.max_index - 1
+                    self.max_index = n_bitboards
+                    self.loaded_data = np.load(self.bitboards_directory + str(n_bitboards) + ".npy")
+                    break
+        return self.loaded_data, real_index
 
 # bitboards_directory = "./PreprocessedData/Bitboards/"
 #
@@ -78,6 +85,16 @@ class AutoEncoderDataset(Dataset):
 #     return bitboards, real_index
 
 
-# if __name__ == "__main__":
-#     bitboards, real_index = get_data(4026270)
-#     print("tests")
+if __name__ == "__main__":
+    train_dataset = AutoEncoderDataset(
+        mode="train")()
+    m1 = memory_profiler.memory_usage()
+    t1 = time.time()
+    data, real_index = train_dataset.get_data(4026270)()
+    t2 = time.time()
+    m2 = memory_profiler.memory_usage()
+    time_diff = t2 - t1
+    mem_diff = m2[0] - m1[0]
+    print(f"It took {time_diff} Secs and {mem_diff} Mb to execute the method")
+
+    print("tests")

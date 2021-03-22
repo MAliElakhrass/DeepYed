@@ -3,7 +3,7 @@ import chess.pgn
 import re
 import memory_profiler
 import time
-from itertools import zip_longest
+import random
 
 N_SQUARES = 64
 N_SIDES = 2
@@ -121,11 +121,15 @@ class DataPreprocessing:
         :param directory: The directory path where the numpy arrays will be saved
 
         """
-        if directory == "./PreprocessedData/Bitboards/":
-            np_to_save = np.array(self.bitboards)
-        else:
-            np_to_save = np.array(self.labels)
-        np.save(directory + str(game_idx), np_to_save)
+        # Random shuffle the data
+        shuffled_list = list(zip(self.bitboards, self.labels))
+        random.shuffle(shuffled_list)
+        self.bitboards, self.labels = zip(*shuffled_list)
+
+        np_bitboards = np.array(self.bitboards)
+        np_labels = np.array(self.labels)
+        np.save(directory + "Bitboards/" + str(game_idx), np_bitboards)
+        np.save(directory + "Labels/" + str(game_idx), np_labels)
 
     def fill_all_moves_data(self, game):
         """
@@ -164,10 +168,9 @@ class DataPreprocessing:
             if chunk_size == self.chunk_size or num_games == (self.n_games - (self.n_games % self.chunk_size)):
                 chunk_size = 0
                 num_bitboards += len(self.bitboards)
-                self.save_results(game_idx=num_bitboards, directory="./PreprocessedData/Bitboards/")
-                self.save_results(game_idx=num_bitboards, directory="./PreprocessedData/Labels/")
-                self.bitboards.clear()
-                self.labels.clear()
+                self.save_results(game_idx=num_bitboards)
+                self.bitboards = []
+                self.labels = []
 
 
 if __name__ == "__main__":

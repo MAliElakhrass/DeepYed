@@ -24,8 +24,8 @@ def train(args):
         mode="train")
     val_dataset = AutoEncoderDataset(
         mode="val")
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-    valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=False)
+    valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
     autoencoder = AutoEncoder().to(device)
     # autoencoder.cuda()
