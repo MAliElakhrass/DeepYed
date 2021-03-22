@@ -34,8 +34,11 @@ class AutoEncoder(nn.Module):
                 if n_in_features > n_out_features:
                     break
                 layers += [
-                    nn.Linear(in_features=n_in_features, out_features=n_out_features),
-                    nn.ReLU()]
+                    nn.Linear(in_features=n_in_features, out_features=n_out_features)]
+                if i != 1:
+                    layers += [nn.ReLU()]
+                else:
+                    layers += [nn.Sigmoid()]
 
         return nn.Sequential(*layers)
 

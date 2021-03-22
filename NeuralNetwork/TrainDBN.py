@@ -14,6 +14,7 @@ from torch.nn import functional as F
 
 from AutoEncoderDataset import *
 from Architecture.AutoEncoder import AutoEncoder
+from Architecture.AE import AE
 
 
 
@@ -21,9 +22,15 @@ from Architecture.AutoEncoder import AutoEncoder
 def train(args):
     train_dataset = AutoEncoderDataset(
         mode="train")
-    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, num_workers=1)
+    val_dataset = AutoEncoderDataset(
+        mode="val")
+    train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
+    valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True)
+
     autoencoder = AutoEncoder().to(device)
+    # autoencoder.cuda()
     optimizer = Adam(autoencoder.parameters(), lr=args.lr)
+    loss_train, loss_val = [], []
 
     for epoch in range(args.epochs):
 
@@ -32,7 +39,6 @@ def train(args):
         loss_train_batch = []
         with tqdm(total=len(train_loader), ascii=True) as training_bar:
             training_bar.set_description(f'[Training] Epoch {epoch + 1}')
-            training_loss = 0
             for batch_id, (input, _) in enumerate(train_loader):
                 input = input.to(device)
                 optimizer.zero_grad()
@@ -41,20 +47,48 @@ def train(args):
                 loss = bce_loss(decoder_output, input)
 
                 loss.backward()
-                training_loss += loss.item()
                 optimizer.step()
-
-                print('====> Epoch: {} Average loss: {:.4f}'.format(
-                    epoch, training_loss / len(train_loader.dataset)))
+                loss_train_batch.append(loss.item())
 
                 training_bar.set_postfix_str("Loss: {:.3f} ".format(loss.item()))
                 training_bar.update()
 
-            training_bar.set_postfix_str("Mean loss: {:.4f}".format(np.mean(loss_train_batch)))
-            # Adjust learning rate
-            for params in optimizer.param_groups:
-                params['lr'] *= args.decay
 
+
+            # print('======> Epoch: {} Training Average loss: {:.4f}'.format(
+            #     epoch, training_loss / len(train_loader.dataset)))
+
+            training_bar.set_postfix_str("Training Mean loss: {:.4f}".format(np.mean(loss_train_batch)))
+
+        # Validation loop
+        loss_val_batch = []
+        autoencoder.eval()
+        with tqdm(total=len(valid_loader), ascii=True) as val_bar:
+            val_bar.set_description('[Validation]')
+            differences = 0
+            with torch.no_grad():
+                for batch_id, (input, _) in enumerate(valid_loader):
+                    input = input.to(device)
+                    decoder_output, encoder_output = autoencoder(input)
+                    pred = (decoder_output.cpu().detach().numpy() > .5).astype(int)
+                    differences += float(np.sum(input.cpu().detach().numpy() != pred))
+                    loss += bce_loss(decoder_output, input)
+
+                    loss.backward()
+                    loss_val_batch.append(loss.item())
+                    val_bar.update()
+
+            # print('======> Epoch: {} Validation Average loss: {:.4f}'.format(
+            #             epoch, validation_loss / len(valid_loader.dataset)))
+
+            val_bar.set_postfix_str("Validation Mean loss: {:.4f}|| Differences: {:.3f}".format(np.mean(loss_val_batch), np.mean(differences)))
+
+        save_checkpoint(autoencoder, optimizer, epoch, args)
+        # At first the learning rate starts from 0.005 and should be multiplied by 0.98 at the end of every epoch
+        for params in optimizer.param_groups:
+            params['lr'] *= args.decay
+        loss_train.append(loss_train_batch)
+        loss_val.append(loss_val_batch)
 # def eval(args):
 #     test_dataset = AutoEncoderDataset(
 #         mode="test")
@@ -67,8 +101,8 @@ def save_checkpoint(model, optim, epoch, args):
              'optimizer': optim.state_dict(),
              'epoch': epoch + 1}
     path_to_file = 'Checkpoints/Autoencoder/lr_{}_decay_{}'.format(int(args.lr), int(args.decay))
-    # if not os.path.isdir(save_dir):
-    #     os.mkdir(save_dir)
+    if not os.path.isdir(path_to_file):
+        os.mkdir(path_to_file)
     torch.save(state, os.path.join(path_to_file, 'autoencoder_{}.pth.tar'.format(epoch)))
 
 
@@ -87,7 +121,7 @@ if __name__ == "__main__":
                                                                   'decay, 0.98')
 
     parser.add_argument('--epochs', type=int, default=10, help='The number of epochs to train, 10')
-    parser.add_argument('--batch-size', type=int, default=1, help='The batch size of the input, 1')
+    parser.add_argument('--batch-size', type=int, default=2, help='The batch size of the input, 1')
 
     parser.add_argument('--checkpoint_path', default='Checkpoints/top_autoencoder.pth.tar', type=str)
     parser.add_argument('--train', default=True, action='store_true')
@@ -97,12 +131,12 @@ if __name__ == "__main__":
         print('CUDA is not available.')
         device = torch.device("cpu")
     else:
+        print('CUDA Available, Running on GPU!')
         device = torch.device("cuda")
 
     args = parser.parse_args()
 
     if args.train:
-        print(sys.path)
         train(args)
 
     if args.eval:
