@@ -15,6 +15,7 @@ class AutoEncoderDataset(Dataset):
         self.loaded_data = []
         self.is_loaded = False
         self.max_index = 0
+        self.previous_index = 0
 
     def __getitem__(self, index):
         self.loaded_data, real_index = self.get_data(index)
@@ -42,15 +43,15 @@ class AutoEncoderDataset(Dataset):
 
     def get_data(self, index):
         real_index = 0
-        if index < self.max_index:
-            return self.loaded_data, index - self.max_index - 1
+        if index < self.max_index and index >= self.previous_index:
+            return self.loaded_data, index - self.previous_index - 1
         else:
             for n_bitboards in self.bitboards_lenghts:
                 if index > n_bitboards:
-                    self.max_index = n_bitboards
+                    self.previous_index = n_bitboards
                     continue
                 else:
-                    real_index = index - self.max_index - 1
+                    real_index = index - self.previous_index - 1
                     self.max_index = n_bitboards
                     self.loaded_data = np.load(self.bitboards_directory + str(n_bitboards) + ".npy")
                     break
