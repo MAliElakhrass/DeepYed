@@ -14,7 +14,7 @@ class AutoEncoderDataset(Dataset):
         self.bitboards_lenghts = self.get_file_names()
         self.loaded_data = []
         self.is_loaded = False
-        self.max_index = 0
+        self.max_size = 0
         self.previous_size = 0
 
     def __getitem__(self, index):
@@ -43,8 +43,8 @@ class AutoEncoderDataset(Dataset):
 
     def get_data(self, index):
         real_index = 0
-        if index < self.max_index and index >= self.previous_index:
-            return self.loaded_data, index - self.previous_index
+        if index < self.max_size and index >= self.previous_size:
+            return self.loaded_data, index - self.previous_size
         else:
             for n_bitboards in self.bitboards_lenghts:
                 if index > n_bitboards:
@@ -59,8 +59,8 @@ class AutoEncoderDataset(Dataset):
                     # If index is still smaller, than it's the first file
                     if self.previous_size > index:
                         self.previous_size = 0
-                    real_index = index - self.previous_index
-                    self.max_index = n_bitboards
+                    real_index = index - self.previous_size
+                    self.max_size = n_bitboards
                     self.loaded_data = np.load(self.bitboards_directory + str(n_bitboards) + ".npy")
                     break
         return self.loaded_data, real_index
