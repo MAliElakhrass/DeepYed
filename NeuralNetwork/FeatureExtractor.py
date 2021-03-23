@@ -11,6 +11,7 @@ N_GAMES = 100000
 class FeatureExtractor:
     def __init__(self):
         self.autoencoder = AutoEncoder()
+        # Load the best epoch
         self.state = torch.load('NeuralNetwork/Checkpoints/AutoEncoder/lr_0_decay_0/autoencoder_1.pth.tar',
                                 map_location=lambda storage, loc: storage)
         self.features_directory = 'NeuralNetwork/PreprocessedData/Features/'

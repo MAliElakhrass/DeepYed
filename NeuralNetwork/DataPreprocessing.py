@@ -10,7 +10,7 @@ N_SIDES = 2
 N_PIECES = 6
 N_EXTRA_BITS = 5
 N_GAMES = 1228086
-CHUNK_SIZE = 5000
+CHUNK_SIZE = 2500
 
 
 class DataPreprocessing:
@@ -162,15 +162,17 @@ class DataPreprocessing:
                 print(len(self.bitboards))
             num_games += 1
             read_game = chess.pgn.read_game(self.data)
-            chunk_size += 1
-            self.fill_all_moves_data(game=read_game)
-            # Saving after chunk_size games with the name of the file being the number of bitboards where we're at
-            if chunk_size == self.chunk_size or num_games == (self.n_games - (self.n_games % self.chunk_size)):
-                chunk_size = 0
-                num_bitboards += len(self.bitboards)
-                self.save_results(game_idx=num_bitboards)
-                self.bitboards = []
-                self.labels = []
+            game_outcome = self.retrieve_label(read_game)
+            if game_outcome != 0:
+                chunk_size += 1
+                self.fill_all_moves_data(game=read_game)
+                # Saving after chunk_size games with the name of the file being the number of bitboards where we're at
+                if chunk_size == self.chunk_size or num_games == (self.n_games - (self.n_games % self.chunk_size)):
+                    chunk_size = 0
+                    num_bitboards += len(self.bitboards)
+                    self.save_results(game_idx=num_bitboards)
+                    self.bitboards = []
+                    self.labels = []
 
 
 if __name__ == "__main__":
