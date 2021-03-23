@@ -160,10 +160,10 @@ class DataPreprocessing:
             if num_games % 10 == 0:
                 print(num_games)
                 print(len(self.bitboards))
-            num_games += 1
             read_game = chess.pgn.read_game(self.data)
             game_outcome = self.retrieve_label(read_game)
             if game_outcome != 0:
+                num_games += 1
                 chunk_size += 1
                 self.fill_all_moves_data(game=read_game)
                 # Saving after chunk_size games with the name of the file being the number of bitboards where we're at
