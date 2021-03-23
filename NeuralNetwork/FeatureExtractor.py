@@ -21,7 +21,9 @@ class FeatureExtractor:
 
     def extract(self):
         for file in os.listdir(self.bitboards_directory):
+
             filename, file_extension = os.path.splitext(file)
+            print("Extracting features from " + filename + file_extension)
             self.loaded_bitboards = np.load(self.bitboards_directory + filename + ".npy")
             _, encoder_output = self.autoencoder(torch.from_numpy(self.loaded_bitboards).type(torch.FloatTensor))
             detached_grad_encoder = encoder_output.detach().numpy()
