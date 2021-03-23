@@ -47,7 +47,7 @@ class AutoEncoderDataset(Dataset):
             return self.loaded_data, index - self.previous_size
         else:
             for n_bitboards in self.bitboards_lenghts:
-                if index > n_bitboards:
+                if index >= n_bitboards:
                     self.previous_size = n_bitboards
                     continue
                 else:
