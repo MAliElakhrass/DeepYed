@@ -9,13 +9,19 @@ N_GAMES = 100000
 
 
 class FeatureExtractor:
-    def __init__(self):
+    def __init__(self, mode):
         self.autoencoder = AutoEncoder()
         # Load the best epoch
         self.state = torch.load('NeuralNetwork/Checkpoints/AutoEncoder/lr_0_decay_0/autoencoder_1.pth.tar',
                                 map_location=lambda storage, loc: storage)
-        self.features_directory = 'NeuralNetwork/PreprocessedData/Features/'
-        self.bitboards_directory = 'NeuralNetwork/PreprocessedData/Bitboards/'
+
+        self.mode = mode
+        if self.mode == "train":
+            self.features_directory = 'NeuralNetwork/PreprocessedData/Features/Train/'
+            self.bitboards_directory = 'NeuralNetwork/PreprocessedData/Bitboards/Train/'
+        elif self.mode == "valid":
+            self.features_directory = 'NeuralNetwork/PreprocessedData/Features/Valid/'
+            self.bitboards_directory = 'NeuralNetwork/PreprocessedData/Bitboards/Valid/'
         self.bach_size = BATCH_SIZE
         self.n_games = N_GAMES
 
@@ -32,5 +38,8 @@ class FeatureExtractor:
 
 
 if __name__ == "__main__":
-    fe = FeatureExtractor()
-    fe.extract()
+    fe_train = FeatureExtractor(mode="train")
+    fe_train.extract()
+
+    fe_val = FeatureExtractor(mode="valid")
+    fe_val.extract()
