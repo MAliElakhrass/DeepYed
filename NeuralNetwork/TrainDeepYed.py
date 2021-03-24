@@ -126,7 +126,7 @@ if __name__ == "__main__":
                                                                   'decay, 0.99')
 
     parser.add_argument('--epochs', type=int, default=10, help='The number of epochs to train, 10')
-    parser.add_argument('--batch-size', type=int, default=50000, help='The batch size of the input, 50000')
+    parser.add_argument('--batch-size', type=int, default=5000, help='The batch size of the input, 50000')
 
     parser.add_argument('--checkpoint_path', default='Checkpoints/top_autoencoder.pth.tar', type=str)
     parser.add_argument('--train', default=True, action='store_true')
