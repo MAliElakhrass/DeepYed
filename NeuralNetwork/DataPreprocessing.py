@@ -139,16 +139,13 @@ class DataPreprocessing:
         np_bitboards = np.array(list(self.train_bitboards))
         np_labels = np.array(list(self.train_labels))
 
-
         train_name = str(self.total_train)
 
         np.save(directory + "Bitboards/Train/" + train_name, np_bitboards)
         np.save(directory + "Labels/Train/" + train_name, np_labels)
 
-
         val_bitboards = np.array(list(self.valid_bitboards))
         val_labels = np.array(list(self.valid_labels))
-
 
         val_name = str(self.total_valid)
 
@@ -193,12 +190,11 @@ class DataPreprocessing:
                 # Saving after chunk_size games with the name of the file being the number of bitboards where we're at
                 if chunk_size == self.chunk_size or num_games == (self.n_games - (self.n_games % self.chunk_size)):
                     chunk_size = 0
-                    self.total_train += math.floor(len(self.bitboards)*0.8)
-                    self.total_valid += math.ceil(len(self.valid_bitboards)*0.2)
+                    self.total_train += math.floor(len(self.bitboards) * 0.8)
+                    self.total_valid += math.ceil(len(self.bitboards) * 0.2)
                     self.save_results()
                     self.bitboards = []
                     self.labels = []
-
 
 
 if __name__ == "__main__":

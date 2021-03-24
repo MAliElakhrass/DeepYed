@@ -10,8 +10,12 @@ import numpy as np
 class AutoEncoderDataset(Dataset):
     def __init__(self, mode="train"):
         self.mode = mode
-        self.bitboards_directory = "NeuralNetwork/PreprocessedData/Bitboards/"
-        self.bitboards_lenghts = self.get_file_names()
+        if self.mode == "train":
+            self.bitboards_directory = "NeuralNetwork/PreprocessedData/Bitboards/Train/"
+            self.bitboards_lenghts = self.get_file_names()
+        elif self.mode == "valid":
+            self.bitboards_directory = "NeuralNetwork/PreprocessedData/Bitboards/Valid/"
+            self.bitboards_lenghts = self.get_file_names()
         self.loaded_data = []
         self.is_loaded = False
         self.max_size = 0

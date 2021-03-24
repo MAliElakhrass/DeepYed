@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from torch.optim import Adam
 from torch.nn import functional as F
 
-from AutoEncoderDataset import *
+from Datasets.AutoEncoderDataset import *
 from Architecture.AutoEncoder import AutoEncoder
 from Architecture.AE import AE
 
@@ -23,7 +23,7 @@ def train(args):
     train_dataset = AutoEncoderDataset(
         mode="train")
     val_dataset = AutoEncoderDataset(
-        mode="val")
+        mode="valid")
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=False)
     valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
@@ -141,6 +141,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.train:
+        f = np.load('NeuralNetwork/PreprocessedData/Bitboards/Train/252153.npy')
         train(args)
 
     if args.eval:
