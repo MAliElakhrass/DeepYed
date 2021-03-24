@@ -5,7 +5,7 @@ from torch import nn
 class SiameseNet(nn.Module):
     def __init__(self):
         super(SiameseNet, self).__init__()
-        self.size_inputs = [400, 200, 100, 2]
+        self.size_inputs = [200, 400, 200, 100, 2]
         self.fc_layers = self.create_fc_layers()
 
     def create_fc_layers(self):
@@ -21,7 +21,7 @@ class SiameseNet(nn.Module):
                 if i != len(self.size_inputs) - 2:
                     layers += [nn.ReLU()]
                 else:
-                    layers += [nn.ReLU()]
+                    layers += [nn.Sigmoid()]
 
         return nn.Sequential(*layers)
 
