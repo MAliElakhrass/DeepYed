@@ -4,6 +4,7 @@ import re
 import memory_profiler
 import time
 import random
+import math
 
 N_SQUARES = 64
 N_SIDES = 2
@@ -25,6 +26,10 @@ class DataPreprocessing:
 
         self.bitboards = []
         self.labels = []
+
+        self.train_bitboards, self.valid_bitboards = [], []
+        self.train_labels, self.valid_labels = [], []
+        self.total_train, self.total_valid = 0, 0
 
     def read_data(self, path='../data/CCRL-4040.[1228086].pgn'):
         """
@@ -114,7 +119,7 @@ class DataPreprocessing:
         bitboard = self.get_bitboard(board)
         return board, bitboard
 
-    def save_results(self, game_idx, directory="./PreprocessedData/"):
+    def save_results(self, directory="./PreprocessedData/"):
         """
         Saves the bitboards and the labels as numpy files
 
@@ -124,12 +129,31 @@ class DataPreprocessing:
         # Random shuffle the data
         shuffled_list = list(zip(self.bitboards, self.labels))
         random.shuffle(shuffled_list)
-        self.bitboards, self.labels = zip(*shuffled_list)
 
-        np_bitboards = np.array(self.bitboards)
-        np_labels = np.array(self.labels)
-        np.save(directory + "Bitboards/" + str(game_idx), np_bitboards)
-        np.save(directory + "Labels/" + str(game_idx), np_labels)
+        self.bitboards, self.labels = zip(*shuffled_list)
+        self.train_bitboards = self.bitboards[:int(len(self.bitboards) * 0.8)]
+        self.valid_bitboards = self.bitboards[int(len(self.bitboards) * .8):]
+        self.train_labels = self.labels[:int(len(self.bitboards) * 0.8)]
+        self.valid_labels = self.labels[int(len(self.bitboards) * .8):]
+
+        np_bitboards = np.array(list(self.train_bitboards))
+        np_labels = np.array(list(self.train_labels))
+
+
+        train_name = str(self.total_train)
+
+        np.save(directory + "Bitboards/Train/" + train_name, np_bitboards)
+        np.save(directory + "Labels/Train/" + train_name, np_labels)
+
+
+        val_bitboards = np.array(list(self.valid_bitboards))
+        val_labels = np.array(list(self.valid_labels))
+
+
+        val_name = str(self.total_valid)
+
+        np.save(directory + "Bitboards/Valid/" + val_name, val_bitboards)
+        np.save(directory + "Labels/Valid/" + val_name, val_labels)
 
     def fill_all_moves_data(self, game):
         """
@@ -154,12 +178,12 @@ class DataPreprocessing:
         Preprocesses the games to extract he bitboards and the outcomes of every game
         """
         num_games = 0
-        num_bitboards = 0
         chunk_size = 0
         for _ in range(self.n_games):
             if num_games % 10 == 0:
                 print(num_games)
-                print(len(self.bitboards))
+                print("Train bitboards: " + str(self.total_train))
+                print("Valid bitboards: " + str(self.total_valid))
             read_game = chess.pgn.read_game(self.data)
             game_outcome = self.retrieve_label(read_game)
             if game_outcome != 0:
@@ -169,10 +193,12 @@ class DataPreprocessing:
                 # Saving after chunk_size games with the name of the file being the number of bitboards where we're at
                 if chunk_size == self.chunk_size or num_games == (self.n_games - (self.n_games % self.chunk_size)):
                     chunk_size = 0
-                    num_bitboards += len(self.bitboards)
-                    self.save_results(game_idx=num_bitboards)
+                    self.total_train += math.floor(len(self.bitboards)*0.8)
+                    self.total_valid += math.ceil(len(self.valid_bitboards)*0.2)
+                    self.save_results()
                     self.bitboards = []
                     self.labels = []
+
 
 
 if __name__ == "__main__":
