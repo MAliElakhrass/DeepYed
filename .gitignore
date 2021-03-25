@@ -134,6 +134,8 @@ dmypy.json
 # Other
 engines/
 books/
+
+# Project files
 data/
 NeuralNetwork/data/
 NeuralNetwork/PreprocessedData/
