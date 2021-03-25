@@ -33,12 +33,27 @@ class SiameseDataset(Dataset):
 
 
     def __getitem__(self, index):
+
         permutation_order = random.randint(0, 1)
         self.get_data(index)
         win_index = index - self.prev_wins_count
         loss_index = index - self.prev_losses_count
         winning_move = self.loaded_wins[win_index]
         losing_move = self.loaded_losses[loss_index]
+        # Reset all parameters for next epoch
+        if index == self.n_inputs - 1:
+            self.current_filename = self.features_files_length[0]
+            self.current_file_idx = 0
+            self.previous_file_idx = 0
+            self.loaded_data = []
+            self.loaded_wins = []
+            self.loaded_losses = []
+            self.cur_wins, self.cur_losses = 0, 0
+            self.load_initial_files()
+            self.is_loss_reloaded = False
+            self.is_win_reloaded = False
+            self.prev_wins_count, self.prev_losses_count = 0, 0
+
         if permutation_order == 0:
             input_moves = np.hstack((winning_move, losing_move))
             input_moves = torch.from_numpy(input_moves).type(torch.FloatTensor)

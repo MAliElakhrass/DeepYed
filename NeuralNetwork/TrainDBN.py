@@ -31,6 +31,8 @@ def train(args):
     # autoencoder.cuda()
     optimizer = Adam(autoencoder.parameters(), lr=args.lr)
     loss_train, loss_val = [], []
+    train_epoch, valid_epoch = [], []
+    all_differences = []
 
     for epoch in range(args.epochs):
 
@@ -60,7 +62,7 @@ def train(args):
 
             # print('======> Epoch: {} Training Average loss: {:.4f}'.format(
             #     epoch, training_loss / len(train_loader.dataset)))
-
+            train_epoch.append(train_loss/len(train_loader.dataset))
             training_bar.set_postfix_str("Training Mean loss: {:.4f}".format(train_loss/len(train_loader.dataset)))
 
         # Validation loop
@@ -85,14 +87,19 @@ def train(args):
 
 
             val_bar.set_postfix_str("Validation Mean loss: {:.4f}|| Differences: {:.3f}".format(val_loss/len(valid_loader.dataset), differences/len(valid_loader.dataset)))
-
+            valid_epoch.append(val_loss/len(valid_loader.dataset))
+            all_differences.append(differences/len(valid_loader.dataset))
         save_checkpoint(autoencoder, optimizer, epoch, args)
         # At first the learning rate starts from 0.005 and should be multiplied by 0.98 at the end of every epoch
         for params in optimizer.param_groups:
             params['lr'] *= args.decay
         loss_train.append(loss_train_batch)
         loss_val.append(loss_val_batch)
-
+    np.savetxt("NeuralNetwork/Results/AutoEncoder/Train_batch_res.csv", np.array(loss_train))
+    np.savetxt("NeuralNetwork/Results/AutoEncoder/Valid_batch_results.csv", np.array(loss_val))
+    np.savetxt("NeuralNetwork/Results/AutoEncoder/Valid_Res_per_epoch.csv", np.array(valid_epoch))
+    np.savetxt("NeuralNetwork/Results/AutoEncoder/Train_Res_per_epoch.csv", np.array(train_epoch))
+    np.savetxt("NeuralNetwork/Results/AutoEncoder/Differences.csv", np.array(all_differences))
 # def eval(args):
 #     test_dataset = AutoEncoderDataset(
 #         mode="test")
@@ -104,7 +111,7 @@ def save_checkpoint(model, optim, epoch, args):
     state = {'state_dict': model.state_dict(),
              'optimizer': optim.state_dict(),
              'epoch': epoch + 1}
-    path_to_file = 'NeuralNetwork/Checkpoints/AutoEncoder/lr_{}_decay_{}'.format(int(args.lr), int(args.decay))
+    path_to_file = 'NeuralNetwork/Checkpoints/AutoEncoder/lr_{}_decay_{}'.format(int(args.lr*1000), int(args.decay*100))
     if not os.path.exists(path_to_file):
         os.makedirs(path_to_file)
     torch.save(state, os.path.join(path_to_file, 'autoencoder_{}.pth.tar'.format(epoch)))
@@ -124,7 +131,7 @@ if __name__ == "__main__":
     parser.add_argument('--decay', type=float, default=0.98, help='After each epoch the lr is multiplied by this '
                                                                   'decay, 0.98')
 
-    parser.add_argument('--epochs', type=int, default=10, help='The number of epochs to train, 10')
+    parser.add_argument('--epochs', type=int, default=200, help='The number of epochs to train, 200')
     parser.add_argument('--batch-size', type=int, default=50000, help='The batch size of the input, 1')
 
     parser.add_argument('--checkpoint_path', default='Checkpoints/top_autoencoder.pth.tar', type=str)

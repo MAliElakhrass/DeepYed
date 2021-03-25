@@ -11,7 +11,7 @@ N_SIDES = 2
 N_PIECES = 6
 N_EXTRA_BITS = 5
 N_GAMES = 1228086
-CHUNK_SIZE = 2500
+CHUNK_SIZE = 5000
 
 
 class DataPreprocessing:

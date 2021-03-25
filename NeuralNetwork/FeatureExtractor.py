@@ -12,7 +12,7 @@ class FeatureExtractor:
     def __init__(self, mode):
         self.autoencoder = AutoEncoder()
         # Load the best epoch
-        self.state = torch.load('NeuralNetwork/Checkpoints/AutoEncoder/lr_0_decay_0/autoencoder_1.pth.tar',
+        self.state = torch.load('NeuralNetwork/Checkpoints/AutoEncoder/lr_0_decay_0/autoencoder_9.pth.tar',
                                 map_location=lambda storage, loc: storage)
 
         self.mode = mode

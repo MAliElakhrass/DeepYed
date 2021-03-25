@@ -8,11 +8,12 @@ import numpy as np
 import os
 
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, ConcatDataset
 from torch.optim import Adam
 from torch.nn import functional as F
 
 from Datasets.SiameseDataset import *
+
 from Architecture.SiameseNet import SiameseNet
 from Architecture.AE import AE
 
@@ -20,15 +21,16 @@ from Architecture.AE import AE
 
 
 def train(args):
+    # The number specified here should not be bigger than the number of losses or number of wins, otherwise an index error will occur
+    val_dataset = SiameseDataset(
+        mode="val", n_inputs=400000)
+
     train_dataset = SiameseDataset(
         mode="train")
-    val_dataset = SiameseDataset(
-        mode="val", n_inputs=500000)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=False)
     valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
     siamese_net = SiameseNet().to(device)
-    # autoencoder.cuda()
     optimizer = Adam(siamese_net.parameters(), lr=args.lr)
     loss_train, loss_val = [], []
 
@@ -70,7 +72,6 @@ def train(args):
         val_loss = 0
         with tqdm(total=len(valid_loader), ascii=True) as val_bar:
             val_bar.set_description('[Validation]')
-            differences = 0
             with torch.no_grad():
                 for batch_id, (input, label) in enumerate(valid_loader):
                     input = input.to(device)
@@ -85,7 +86,7 @@ def train(args):
                     val_bar.update()
 
 
-            val_bar.set_postfix_str("Validation Mean loss: {:.4f}|| Differences: {:.3f}".format(val_loss/len(valid_loader.dataset), differences/len(valid_loader.dataset)))
+            val_bar.set_postfix_str("Validation Mean loss: {:.4f}".format(val_loss/len(valid_loader.dataset)))
 
         save_checkpoint(siamese_net, optimizer, epoch, args)
         # At first the learning rate starts from 0.005 and should be multiplied by 0.98 at the end of every epoch
