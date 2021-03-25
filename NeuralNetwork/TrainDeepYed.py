@@ -23,7 +23,7 @@ def train(args):
     train_dataset = SiameseDataset(
         mode="train")
     val_dataset = SiameseDataset(
-        mode="val")
+        mode="val", n_inputs=500000)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=False)
     valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
