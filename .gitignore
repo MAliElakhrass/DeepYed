@@ -134,7 +134,7 @@ dmypy.json
 # Other
 engines/
 books/
-
+data/
 NeuralNetwork/data/
 NeuralNetwork/PreprocessedData/
 NeuralNetwork/Checkpoints/
