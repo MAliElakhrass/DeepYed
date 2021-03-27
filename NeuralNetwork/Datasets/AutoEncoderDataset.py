@@ -33,7 +33,7 @@ class AutoEncoderDataset(Dataset):
 
     def __len__(self):
 
-        return self.bitboards_lenghts[-1]
+        return self.bitboards_lenghts[8]
 
     def get_file_names(self):
         file_names = []

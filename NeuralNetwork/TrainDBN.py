@@ -13,8 +13,10 @@ from torch.optim import Adam
 from torch.nn import functional as F
 
 from Datasets.AutoEncoderDataset import *
+from Datasets.AutoEncoderSubset import *
 from Architecture.AutoEncoder import AutoEncoder
-from Architecture.AE import AE
+from Architecture.ImprovedAutoEncoder import ImprovedAutoEncoder
+from Backup.AE import AE
 
 
 
@@ -24,10 +26,15 @@ def train(args):
         mode="train")
     val_dataset = AutoEncoderDataset(
         mode="valid")
+
+    # train_dataset = AutoEncoderSubset(
+    #     mode="train", length=2000000)
+    # val_dataset = AutoEncoderSubset(
+    #     mode="valid", length=500000)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=False)
     valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
-    autoencoder = AutoEncoder().to(device)
+    autoencoder = ImprovedAutoEncoder().to(device)
     # autoencoder.cuda()
     optimizer = Adam(autoencoder.parameters(), lr=args.lr)
     loss_train, loss_val = [], []
@@ -95,26 +102,21 @@ def train(args):
             params['lr'] *= args.decay
         loss_train.append(loss_train_batch)
         loss_val.append(loss_val_batch)
-    np.savetxt("NeuralNetwork/Results/AutoEncoder/Train_batch_res.csv", np.array(loss_train))
-    np.savetxt("NeuralNetwork/Results/AutoEncoder/Valid_batch_results.csv", np.array(loss_val))
-    np.savetxt("NeuralNetwork/Results/AutoEncoder/Valid_Res_per_epoch.csv", np.array(valid_epoch))
-    np.savetxt("NeuralNetwork/Results/AutoEncoder/Train_Res_per_epoch.csv", np.array(train_epoch))
-    np.savetxt("NeuralNetwork/Results/AutoEncoder/Differences.csv", np.array(all_differences))
-# def eval(args):
-#     test_dataset = AutoEncoderDataset(
-#         mode="test")
-#
-#     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
+        np.savetxt("NeuralNetwork/Results/ImprovedAutoEncoder/{}_Train_batch_res.csv".format(epoch), np.array(loss_train))
+        np.savetxt("NeuralNetwork/Results/ImprovedAutoEncoder/{}_Valid_batch_results.csv".format(epoch), np.array(loss_val))
+        np.savetxt("NeuralNetwork/Results/ImprovedAutoEncoder/{}_Valid_Res_per_epoch.csv".format(epoch), np.array(valid_epoch))
+        np.savetxt("NeuralNetwork/Results/ImprovedAutoEncoder/{}_Train_Res_per_epoch.csv".format(epoch), np.array(train_epoch))
+        np.savetxt("NeuralNetwork/Results/ImprovedAutoEncoder/{}_Differences.csv".format(epoch), np.array(all_differences))
 
 
 def save_checkpoint(model, optim, epoch, args):
     state = {'state_dict': model.state_dict(),
              'optimizer': optim.state_dict(),
              'epoch': epoch + 1}
-    path_to_file = 'NeuralNetwork/Checkpoints/AutoEncoder/lr_{}_decay_{}'.format(int(args.lr*1000), int(args.decay*100))
+    path_to_file = 'NeuralNetwork/Checkpoints/ImprovedAutoEncoder/lr_{}_decay_{}'.format(int(args.lr*1000), int(args.decay*100))
     if not os.path.exists(path_to_file):
         os.makedirs(path_to_file)
-    torch.save(state, os.path.join(path_to_file, 'autoencoder_{}.pth.tar'.format(epoch)))
+    torch.save(state, os.path.join(path_to_file, 'improved_autoencoder_{}.pth.tar'.format(epoch)))
 
 
 def bce_loss(decoder_result, actual_data):
@@ -132,7 +134,7 @@ if __name__ == "__main__":
                                                                   'decay, 0.98')
 
     parser.add_argument('--epochs', type=int, default=200, help='The number of epochs to train, 200')
-    parser.add_argument('--batch-size', type=int, default=50000, help='The batch size of the input, 1')
+    parser.add_argument('--batch-size', type=int, default=50000, help='The batch size of the input, 50000')
 
     parser.add_argument('--checkpoint_path', default='Checkpoints/top_autoencoder.pth.tar', type=str)
     parser.add_argument('--train', default=True, action='store_true')
@@ -148,7 +150,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.train:
-        f = np.load('NeuralNetwork/PreprocessedData/Bitboards/Train/252153.npy')
         train(args)
 
     if args.eval:

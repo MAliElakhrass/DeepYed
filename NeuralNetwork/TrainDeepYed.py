@@ -15,7 +15,8 @@ from torch.nn import functional as F
 from Datasets.SiameseDataset import *
 
 from Architecture.SiameseNet import SiameseNet
-from Architecture.AE import AE
+from Architecture.ImprovedSiamese import ImprovedSiamese
+from Backup.AE import AE
 
 
 
@@ -23,17 +24,17 @@ from Architecture.AE import AE
 def train(args):
     # The number specified here should not be bigger than the number of losses or number of wins, otherwise an index error will occur
     val_dataset = SiameseDataset(
-        mode="val", n_inputs=400000)
+        mode="val", n_inputs=3733410)
 
     train_dataset = SiameseDataset(
-        mode="train")
+        mode="train", n_inputs=14917442)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=False)
     valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
-    siamese_net = SiameseNet().to(device)
+    siamese_net = ImprovedSiamese().to(device)
     optimizer = Adam(siamese_net.parameters(), lr=args.lr)
     loss_train, loss_val = [], []
-
+    train_epoch, valid_epoch = [], []
     for epoch in range(args.epochs):
 
         # Training loop
@@ -63,7 +64,7 @@ def train(args):
 
             # print('======> Epoch: {} Training Average loss: {:.4f}'.format(
             #     epoch, training_loss / len(train_loader.dataset)))
-
+            train_epoch.append(train_loss / len(train_loader.dataset))
             training_bar.set_postfix_str("Training Mean loss: {:.4f}".format(train_loss/len(train_loader.dataset)))
 
         # Validation loop
@@ -85,7 +86,7 @@ def train(args):
                     val_bar.set_postfix_str("Validation average batch loss: {:.3f} ".format(average_batch_loss))
                     val_bar.update()
 
-
+            valid_epoch.append(val_loss / len(valid_loader.dataset))
             val_bar.set_postfix_str("Validation Mean loss: {:.4f}".format(val_loss/len(valid_loader.dataset)))
 
         save_checkpoint(siamese_net, optimizer, epoch, args)
@@ -94,22 +95,20 @@ def train(args):
             params['lr'] *= args.decay
         loss_train.append(loss_train_batch)
         loss_val.append(loss_val_batch)
-
-# def eval(args):
-#     test_dataset = AutoEncoderDataset(
-#         mode="test")
-#
-#     test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
+        np.savetxt("NeuralNetwork/Results/ImprovedSiamese/{}_Train_batch_res.csv".format(epoch), np.array(loss_train))
+        np.savetxt("NeuralNetwork/Results/ImprovedSiamese/{}_Valid_batch_results.csv".format(epoch), np.array(loss_val))
+        np.savetxt("NeuralNetwork/Results/ImprovedSiamese/{}_Valid_Res_per_epoch.csv".format(epoch), np.array(valid_epoch))
+        np.savetxt("NeuralNetwork/Results/ImprovedSiamese/{}_Train_Res_per_epoch.csv".format(epoch), np.array(train_epoch))
 
 
 def save_checkpoint(model, optim, epoch, args):
     state = {'state_dict': model.state_dict(),
              'optimizer': optim.state_dict(),
              'epoch': epoch + 1}
-    path_to_file = 'NeuralNetwork/Checkpoints/DeepChess/lr_{}_decay_{}'.format(int(args.lr*1000), int(args.decay*100))
+    path_to_file = 'NeuralNetwork/Checkpoints/ImprovedSiamese/lr_{}_decay_{}'.format(int(args.lr*1000), int(args.decay*100))
     if not os.path.exists(path_to_file):
         os.makedirs(path_to_file)
-    torch.save(state, os.path.join(path_to_file, 'siamese_{}.pth.tar'.format(epoch)))
+    torch.save(state, os.path.join(path_to_file, 'improved_siamese_{}.pth.tar'.format(epoch)))
 
 
 def bce_loss(pred, label):
@@ -126,8 +125,8 @@ if __name__ == "__main__":
     parser.add_argument('--decay', type=float, default=0.99, help='After each epoch the lr is multiplied by this '
                                                                   'decay, 0.99')
 
-    parser.add_argument('--epochs', type=int, default=10, help='The number of epochs to train, 10')
-    parser.add_argument('--batch-size', type=int, default=5000, help='The batch size of the input, 50000')
+    parser.add_argument('--epochs', type=int, default=1000, help='The number of epochs to train, 1000')
+    parser.add_argument('--batch-size', type=int, default=100000, help='The batch size of the input, 100000')
 
     parser.add_argument('--checkpoint_path', default='Checkpoints/top_autoencoder.pth.tar', type=str)
     parser.add_argument('--train', default=True, action='store_true')

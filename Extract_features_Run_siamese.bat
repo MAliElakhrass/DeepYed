@@ -1,0 +1,3 @@
+python NeuralNetwork/FeatureExtractor.py
+python NeuralNetwork/TrainDeepYed.py
+pause

@@ -33,7 +33,6 @@ class SiameseDataset(Dataset):
 
 
     def __getitem__(self, index):
-
         permutation_order = random.randint(0, 1)
         self.get_data(index)
         win_index = index - self.prev_wins_count
