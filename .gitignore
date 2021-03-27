@@ -141,3 +141,4 @@ NeuralNetwork/data/
 NeuralNetwork/PreprocessedData/
 NeuralNetwork/Checkpoints/
 NeuralNetwork/Backup/
+NeuralNetwork/Results/
