@@ -13,8 +13,10 @@ from torch.optim import Adam
 from torch.nn import functional as F
 
 from Datasets.SiameseDataset import *
+from Datasets.ImprovedSiameseDataset import *
 
 from Architecture.SiameseNet import SiameseNet
+from Architecture.ComplexeSiamese import ComplexeSiamese
 from Architecture.ImprovedSiamese import ImprovedSiamese
 from Backup.AE import AE
 
@@ -23,15 +25,15 @@ from Backup.AE import AE
 
 def train(args):
     # The number specified here should not be bigger than the number of losses or number of wins, otherwise an index error will occur
-    val_dataset = SiameseDataset(
+    val_dataset = ImprovedSiameseDataset(
         mode="val", n_inputs=3733410)
 
-    train_dataset = SiameseDataset(
+    train_dataset = ImprovedSiameseDataset(
         mode="train", n_inputs=14917442)
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=False)
     valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
 
-    siamese_net = ImprovedSiamese().to(device)
+    siamese_net = ComplexeSiamese().to(device)
     optimizer = Adam(siamese_net.parameters(), lr=args.lr)
     loss_train, loss_val = [], []
     train_epoch, valid_epoch = [], []
@@ -57,7 +59,7 @@ def train(args):
 
                 average_batch_loss = loss.item()/len(input)
                 loss_train_batch.append(average_batch_loss)
-                training_bar.set_postfix_str("Training average batch loss: {:.3f} ".format(average_batch_loss))
+                training_bar.set_postfix_str("Training average batch loss: {:.5f} ".format(average_batch_loss))
                 training_bar.update()
 
 
@@ -65,7 +67,7 @@ def train(args):
             # print('======> Epoch: {} Training Average loss: {:.4f}'.format(
             #     epoch, training_loss / len(train_loader.dataset)))
             train_epoch.append(train_loss / len(train_loader.dataset))
-            training_bar.set_postfix_str("Training Mean loss: {:.4f}".format(train_loss/len(train_loader.dataset)))
+            training_bar.set_postfix_str("Training Mean loss: {:.5f}".format(train_loss/len(train_loader.dataset)))
 
         # Validation loop
         loss_val_batch = []
@@ -83,32 +85,32 @@ def train(args):
                     val_loss += loss.item()
                     average_batch_loss = loss.item() / len(input)
                     loss_val_batch.append(average_batch_loss)
-                    val_bar.set_postfix_str("Validation average batch loss: {:.3f} ".format(average_batch_loss))
+                    val_bar.set_postfix_str("Validation average batch loss: {:.5f} ".format(average_batch_loss))
                     val_bar.update()
 
             valid_epoch.append(val_loss / len(valid_loader.dataset))
-            val_bar.set_postfix_str("Validation Mean loss: {:.4f}".format(val_loss/len(valid_loader.dataset)))
+            val_bar.set_postfix_str("Validation Mean loss: {:.5f}".format(val_loss/len(valid_loader.dataset)))
 
         save_checkpoint(siamese_net, optimizer, epoch, args)
-        # At first the learning rate starts from 0.005 and should be multiplied by 0.98 at the end of every epoch
+        # At first the learning rate starts from 0.01 and should be multiplied by 0.99 at the end of every epoch
         for params in optimizer.param_groups:
             params['lr'] *= args.decay
         loss_train.append(loss_train_batch)
         loss_val.append(loss_val_batch)
-        np.savetxt("NeuralNetwork/Results/ImprovedSiamese/{}_Train_batch_res.csv".format(epoch), np.array(loss_train))
-        np.savetxt("NeuralNetwork/Results/ImprovedSiamese/{}_Valid_batch_results.csv".format(epoch), np.array(loss_val))
-        np.savetxt("NeuralNetwork/Results/ImprovedSiamese/{}_Valid_Res_per_epoch.csv".format(epoch), np.array(valid_epoch))
-        np.savetxt("NeuralNetwork/Results/ImprovedSiamese/{}_Train_Res_per_epoch.csv".format(epoch), np.array(train_epoch))
+        np.savetxt("NeuralNetwork/Results/SiameseWithImprovedDataset/{}_Train_batch_res.csv".format(epoch), np.array(loss_train))
+        np.savetxt("NeuralNetwork/Results/SiameseWithImprovedDataset/{}_Valid_batch_results.csv".format(epoch), np.array(loss_val))
+        np.savetxt("NeuralNetwork/Results/SiameseWithImprovedDataset/{}_Valid_Res_per_epoch.csv".format(epoch), np.array(valid_epoch))
+        np.savetxt("NeuralNetwork/Results/SiameseWithImprovedDataset/{}_Train_Res_per_epoch.csv".format(epoch), np.array(train_epoch))
 
 
 def save_checkpoint(model, optim, epoch, args):
     state = {'state_dict': model.state_dict(),
              'optimizer': optim.state_dict(),
              'epoch': epoch + 1}
-    path_to_file = 'NeuralNetwork/Checkpoints/ImprovedSiamese/lr_{}_decay_{}'.format(int(args.lr*1000), int(args.decay*100))
+    path_to_file = 'NeuralNetwork/Checkpoints/SiameseWithImprovedDataset/lr_{}_decay_{}'.format(int(args.lr*1000), int(args.decay*100))
     if not os.path.exists(path_to_file):
         os.makedirs(path_to_file)
-    torch.save(state, os.path.join(path_to_file, 'improved_siamese_{}.pth.tar'.format(epoch)))
+    torch.save(state, os.path.join(path_to_file, 'siamese_{}.pth.tar'.format(epoch)))
 
 
 def bce_loss(pred, label):
