@@ -16,6 +16,9 @@ class UpdatedAEDataset(Dataset):
         elif self.mode == "valid":
             self.bitboards_directory = "NeuralNetwork/PreprocessedData/Bitboards/Valid/"
             self.bitboards_lenghts = self.get_file_names()
+        elif self.mode == "test":
+            self.bitboards_directory = "NeuralNetwork/PreprocessedData/Bitboards/Test/"
+            self.bitboards_lenghts = self.get_file_names()
         self.loaded_data = np.load(self.bitboards_directory + str(self.bitboards_lenghts[0]) + ".npy")
 
     def __getitem__(self, index):

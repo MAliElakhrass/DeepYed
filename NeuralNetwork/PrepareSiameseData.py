@@ -8,12 +8,8 @@ BATCH_SIZE = 5000
 N_GAMES = 100000
 
 
-class FeatureExtractor:
+class PrepareSiameseData:
     def __init__(self, mode):
-        self.autoencoder = AutoEncoder()
-        # Load the best epoch
-        self.state = torch.load('NeuralNetwork/Checkpoints/UpdatedDataAE/lr_5_decay_98/updatedData_autoencoder_199.pth.tar',
-                                map_location=lambda storage, loc: storage)
         self.mode = mode
         if self.mode == "train":
             self.features_directory = 'NeuralNetwork/PreprocessedData/Features/Train/'
@@ -29,7 +25,7 @@ class FeatureExtractor:
         self.bitboards_files = self.get_file_names()
 
 
-    def extract(self):
+    def merge(self):
         # for file in os.listdir(self.bitboards_directory):
         #     filename, file_extension = os.path.splitext(file)
         # print("Extracting features from " + filename + file_extension)

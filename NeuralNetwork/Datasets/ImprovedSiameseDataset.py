@@ -123,8 +123,7 @@ class ImprovedSiameseDataset(Dataset):
             self.features_directory + str(self.current_filename) + ".npy")
         self.loaded_labels = np.load(
             self.labels_directory + str(self.current_filename) + ".npy")
-        self.loaded_wins = self.loaded_data[self.loaded_labels == 1]
-        self.loaded_losses = self.loaded_data[self.loaded_labels == -1]
+
         self.prev_losses_count = self.cur_losses
         self.prev_wins_count = self.cur_wins
         self.cur_losses += self.loaded_losses.shape[0]
