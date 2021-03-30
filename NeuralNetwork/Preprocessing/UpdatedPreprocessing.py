@@ -12,7 +12,7 @@ N_SIDES = 2
 N_PIECES = 6
 N_EXTRA_BITS = 5
 N_GAMES = 1228086
-CHUNK_SIZE = 2500000
+CHUNK_SIZE = 500000
 
 
 class UpdatedPreprocessing:
@@ -214,10 +214,12 @@ class UpdatedPreprocessing:
         Preprocesses the games to extract he bitboards and the outcomes of every game
         """
         num_games = 0
-        chunk_size = 0
+        total_games = 0
         for _ in range(self.n_games):
+            total_games += 1
             if num_games % 10 == 0:
-                print("Total Games: " + str(num_games))
+                print("Total choosen Games: " + str(num_games))
+                print("Total games: " + str(total_games))
                 print("Length Bitboards: " + str(len(self.bitboards)))
                 print("Train bitboards: " + str(self.total_train))
                 print("Valid bitboards: " + str(self.total_valid))
