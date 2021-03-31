@@ -1,5 +1,6 @@
 from random import choice, randrange
 import chess
+import chess.engine
 import numpy as np
 
 
@@ -32,9 +33,10 @@ class DataPreprocessing:
         return board
 
     def get_score(self, board, depth):
-        with chess.engine.SimpleEngine.popen_uci('/content/stockfish') as sf:
+        with chess.engine.SimpleEngine.popen_uci('./engines/stockfish-12/stockfish.exe') as sf:
             result = sf.analyse(board, chess.engine.Limit(depth=depth))
             score = result['score'].white().score()
+
             return score
 
     def square_to_index(self, square):
