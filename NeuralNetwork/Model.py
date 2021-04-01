@@ -145,8 +145,8 @@ class DeepYed:
 
 
 if __name__ == '__main__':
-    deep_yed = DeepYed(load=True)
-    # deep_yed.get_dataset()
-    # deep_yed.train()
+    deep_yed = DeepYed(load=False)
+    deep_yed.get_dataset()
+    deep_yed.train()
 
-    deep_yed.play_stockfish()
+    # deep_yed.play_stockfish()
