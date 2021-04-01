@@ -1,3 +1,5 @@
-python NeuralNetwork/FeatureExtractor.py
-python NeuralNetwork/TrainDeepYed.py
+python NeuralNetwork/Preprocessing/AprilPreprocessing.py
+python NeuralNetwork/AprilTrainDBN.py
+python NeuralNetwork/AprilFeatureExtractor.py
+python NeuralNetwork/AprilTrainSiamese.py
 pause

@@ -12,8 +12,10 @@ class FeatureExtractor:
     def __init__(self, mode):
         self.autoencoder = AutoEncoder()
         # Load the best epoch
-        self.state = torch.load('NeuralNetwork/Checkpoints/UpdatedDataAE/lr_5_decay_98/updatedData_autoencoder_199.pth.tar',
-                                map_location=lambda storage, loc: storage)
+        self.state = torch.load(
+            'NeuralNetwork/Checkpoints/New_regular_AE/lr_5_decay_98/new_reg_autoencoder_199.pth.tar',
+            map_location=lambda storage, loc: storage)
+        self.autoencoder.load_state_dict(self.state['state_dict'])
         self.mode = mode
         if self.mode == "train":
             self.features_directory = 'NeuralNetwork/PreprocessedData/Features/Train/'
@@ -28,7 +30,6 @@ class FeatureExtractor:
         self.n_games = N_GAMES
         self.bitboards_files = self.get_file_names()
 
-
     def extract(self):
         # for file in os.listdir(self.bitboards_directory):
         #     filename, file_extension = os.path.splitext(file)
@@ -38,21 +39,23 @@ class FeatureExtractor:
         current_count = 0
         for i, file in enumerate(self.bitboards_files):
             current_data = np.load(self.bitboards_directory + str(file) + ".npy")
-            current_data = np.split(current_data, 20)
+            current_data = np.split(current_data, 2)
+            feat_games = []
             # self.loaded_data = self.merge_data_files()
             for game in current_data:
                 _, encoder_output = self.autoencoder(torch.from_numpy(game).type(torch.FloatTensor))
                 current_count += game.shape[0]
-                # encoded_inputs.append(encoder_output.detach().numpy())
-                feature_filepath = self.features_directory + str(current_count) + ".npy"
-                np.save(feature_filepath, encoder_output.detach().numpy())
+                feat_games.append(encoder_output.detach().numpy())
+            feature_filepath = self.features_directory + str(current_count) + ".npy"
+            np.save(feature_filepath, np.vstack(feat_games))
 
     def get_file_names(self):
         file_names = []
         print(os.getcwd())
         for file in os.listdir(self.bitboards_directory):
             filename, file_extension = os.path.splitext(file)
-            file_names.append(int(filename))
+            if filename != "all_bitboards":
+                file_names.append(int(filename))
         file_names.sort()
 
         return file_names
@@ -69,12 +72,14 @@ class FeatureExtractor:
 
 
 if __name__ == "__main__":
-    fe_train = FeatureExtractor(mode="train")
-    fe_train.extract()
-
-    fe_val = FeatureExtractor(mode="valid")
-    fe_val.extract()
-
-    fe_val = FeatureExtractor(mode="test")
-    fe_val.extract()
-
+    # fe_train = FeatureExtractor(mode="train")
+    # fe_train.extract()
+    #
+    # fe_val = FeatureExtractor(mode="valid")
+    # fe_val.extract()
+    #
+    # fe_val = FeatureExtractor(mode="test")
+    # fe_val.extract()
+    test = np.load("NeuralNetwork\\PreprocessedData\\Features\\Train\\all_features.npy")
+    # bit = np.load("NeuralNetwork\\PreprocessedData\\Bitboards\\Train\\3600000.npy")
+    print("test")

@@ -6,7 +6,7 @@ import numpy as np
 class SmallerSiamese(nn.Module):
     def __init__(self):
         super(SmallerSiamese, self).__init__()
-        self.size_inputs = [200, 100, 2]
+        self.size_inputs = [200, 100, 50, 2]
         self.fc_layers = self.create_fc_layers()
 
     def create_fc_layers(self):

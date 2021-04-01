@@ -1,0 +1,4 @@
+python NeuralNetwork/TrainAEUpdate.py
+python NeuralNetwork/FeatureExtractor.py
+python NeuralNetwork/TrainSmallYed.py
+pause

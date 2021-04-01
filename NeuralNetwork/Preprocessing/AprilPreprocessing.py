@@ -11,11 +11,11 @@ N_SQUARES = 64
 N_SIDES = 2
 N_PIECES = 6
 N_EXTRA_BITS = 5
-N_GAMES = 1228086
+N_GAMES = 1228080
 CHUNK_SIZE = 2000000
 
 
-class UpdatedPreprocessing:
+class AprilPreprocessing:
     def __init__(self):
         self.data = self.read_data()
         self.n_squares = N_SQUARES
@@ -28,17 +28,13 @@ class UpdatedPreprocessing:
         self.bitboards = []
         self.labels = []
 
-        self.train_bitboards, self.valid_bitboards, self.test_bitboards = [], [], []
-        self.train_labels, self.valid_labels, self.test_labels = [], [], []
-        self.total_train, self.total_valid, self.total_test = 0, 0, 0
-
     def read_data(self, path='./data/CCRL-4040.[1228086].pgn'):
         """
         Reads the data from a directory specified by a path
         :param path: The path to the data containing all the games
         :return: A file object
         """
-        self.n_games = int(re.search(r"\[([A-Za-z0-9_]+)\]", path).group(1))
+        # self.n_games = int(re.search(r"\[([A-Za-z0-9_]+)\]", path).group(1))
         return open(path)
 
     def get_bitboard(self, board):
@@ -132,53 +128,26 @@ class UpdatedPreprocessing:
         bitboard = self.get_bitboard(board)
         return board, bitboard
 
-    def save_results(self, directory="NeuralNetwork/PreprocessedData/"):
+    def save_results(self, directory="NeuralNetwork/PreprocessedData/", add_on=None):
         """
         Saves the bitboards and the labels as numpy files
 
         :param directory: The directory path where the numpy arrays will be saved
 
         """
-        # Random shuffle the data
-        shuffled_list = list(zip(self.bitboards, self.labels))
-        random.shuffle(shuffled_list)
-        # Split data 80, 10, 10
-        self.bitboards, self.labels = zip(*shuffled_list)
-        self.train_bitboards = self.bitboards[:int(len(self.bitboards) * 0.8)]
-        self.valid_bitboards = self.bitboards[int(len(self.bitboards) * .8):int(len(self.bitboards) * .9)]
-        self.test_bitboards = self.bitboards[int(len(self.bitboards) * .9):]
+        # # Random shuffle the data
+        # shuffled_list = list(zip(self.bitboards, self.labels))
+        # random.shuffle(shuffled_list)
+        # self.bitboards, self.labels = zip(*shuffled_list)
 
-        self.train_labels = self.labels[:int(len(self.bitboards) * 0.8)]
-        self.valid_labels = self.labels[int(len(self.bitboards) * .8):int(len(self.bitboards) * .9)]
-        self.test_labels = self.labels[int(len(self.bitboards) * .9):]
-
-        self.total_train += len(self.train_bitboards)
-        self.total_valid += len(self.valid_bitboards)
-        self.total_test += len(self.test_bitboards)
-
-        np_bitboards = np.array(list(self.train_bitboards), dtype=np.int8)
-        np_labels = np.array(list(self.train_labels), dtype=np.int8)
-
-        train_name = str(self.total_train)
-
-        # np.save(directory + "Bitboards/Train/" + train_name, np_bitboards)
-        # np.save(directory + "Labels/Train/" + train_name, np_labels)
-
-        val_bitboards = np.array(list(self.valid_bitboards), dtype=np.int8)
-        val_labels = np.array(list(self.valid_labels), dtype=np.int8)
-
-        val_name = str(self.total_valid)
-
-        np.save(directory + "Bitboards/Valid/" + val_name, val_bitboards)
-        np.save(directory + "Labels/Valid/" + val_name, val_labels)
-
-        test_bitboards = np.array(list(self.test_bitboards), dtype=np.int8)
-        test_labels = np.array(list(self.test_labels), dtype=np.int8)
-
-        test_name = str(self.total_test)
-
-        np.save(directory + "Bitboards/Test/" + test_name, test_bitboards)
-        np.save(directory + "Labels/Test/" + test_name, test_labels)
+        np_bitboards = np.array(list(self.bitboards), dtype=np.int8)
+        np_labels = np.array(list(self.labels), dtype=np.int8)
+        if add_on is not None:
+            np.save(directory + "Bitboards/" + "all_bitboards_5M.npy", np_bitboards)
+            np.save(directory + "Labels/" + "all_labels_5M.npy", np_labels)
+        else:
+            np.save(directory + "Bitboards/" + "all_bitboards.npy", np_bitboards)
+            np.save(directory + "Labels/" + "all_labels.npy", np_labels)
 
     def fill_all_moves_data(self, game):
         """
@@ -213,6 +182,7 @@ class UpdatedPreprocessing:
         """
         Preprocesses the games to extract he bitboards and the outcomes of every game
         """
+        m1 = memory_profiler.memory_usage()
         num_games = 0
         total_games = 0
         for _ in range(self.n_games):
@@ -221,25 +191,28 @@ class UpdatedPreprocessing:
                 print("Total choosen Games: " + str(num_games))
                 print("Total games: " + str(total_games))
                 print("Length Bitboards: " + str(len(self.bitboards)))
-                print("Train bitboards: " + str(self.total_train))
-                print("Valid bitboards: " + str(self.total_valid))
             read_game = chess.pgn.read_game(self.data)
             game_outcome = self.retrieve_label(read_game)
-            white_ELO, black_ELO = self.retrieve_ELO(read_game)
-            if game_outcome != 0 and white_ELO > 2000 and black_ELO > 2000:
-                num_games += 1
 
+            # white_ELO, black_ELO = self.retrieve_ELO(read_game)
+
+            if game_outcome != 0:
+                num_games += 1
                 self.fill_all_moves_data(game=read_game)
                 # Saving after chunk_size games with the name of the file being the number of bitboards where we're at
-                if len(self.bitboards) >= self.chunk_size or num_games == self.n_games - 1:
-                    chunk_size = 0
-                    self.save_results()
-                    self.bitboards = []
-                    self.labels = []
+                #len(self.bitboards) >= self.chunk_size
+            m2 = memory_profiler.memory_usage()
+            mem_diff = m2[0] - m1[0]
+            print(mem_diff)
+            if len(self.bitboards) == 5000000:
+                self.save_results(add_on="Backup")
+            if mem_diff >= 10000:
+                break
+        self.save_results()
 
 
 if __name__ == "__main__":
-    data_preprocessing = UpdatedPreprocessing()
+    data_preprocessing = AprilPreprocessing()
     m1 = memory_profiler.memory_usage()
     t1 = time.time()
     data_preprocessing.preprocess_games()
@@ -247,4 +220,4 @@ if __name__ == "__main__":
     m2 = memory_profiler.memory_usage()
     time_diff = t2 - t1
     mem_diff = m2[0] - m1[0]
-    print(f"It took {time_diff} Secs and {mem_diff} Mb to execute the method with dtype uint8")
+    print(f"It took {time_diff} Secs and {mem_diff} Mb to execute the method with dtype int8")

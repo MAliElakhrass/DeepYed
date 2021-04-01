@@ -8,23 +8,43 @@ import numpy as np
 import os
 
 import torch
-from torch.utils.data import DataLoader, ConcatDataset
+from torch.utils.data import DataLoader
 from torch.optim import Adam
 from torch.nn import functional as F
 
-from Datasets.UpdatedSiameseDataset import *
+from Datasets.AprilSiameseDataset import *
 
 from Architecture.SmallerSiamese import SmallerSiamese
 from Architecture.SiameseNet import SiameseNet
 from Architecture.ImprovedSiamese import ImprovedSiamese
 
 def train(args):
-    # The number specified here should not be bigger than the number of losses or number of wins, otherwise an index error will occur
-    train_dataset = UpdatedSiameseDataset(
-        mode="train",  length=4000000, chunk_size=400000)
+    full_features = np.load("NeuralNetwork\\PreprocessedData\\Features\\all_features.npy")
+    all_labels = np.load("NeuralNetwork\\PreprocessedData\\Labels\\all_labels.npy")
 
-    val_dataset = UpdatedSiameseDataset(
-        mode="valid",  length=500000, chunk_size=50000)
+    # Shuffle data the same way for features and labels
+    shuffled_order = np.random.permutation(len(all_labels))
+    full_features = full_features[shuffled_order]
+    all_labels = all_labels[shuffled_order]
+
+    train_features = full_features[:int(len(full_features) * .8)]
+    train_labels = all_labels[:int(len(all_labels) * .8)]
+    valdidation_features = full_features[int(len(full_features) * .8):]
+    valdidation_labels = all_labels[int(len(all_labels) * .8):]
+
+    # train_wins = train_features[train_labels == 1]
+    # train_losses = train_features[train_labels == -1]
+    #
+    # validation_wins = valdidation_features[valdidation_labels == 1]
+    # validation_losses = valdidation_features[valdidation_labels == -1]
+
+    # The number specified here should not be bigger than the number of losses or number of wins, otherwise an index error will occur
+    train_dataset = AprilSiameseDataset(
+        data=train_features, labels=train_labels, length=train_features.shape[0])
+
+    val_dataset = AprilSiameseDataset(
+        data=valdidation_features, labels=valdidation_labels, length=valdidation_features.shape[0])
+
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True)
 
@@ -93,23 +113,23 @@ def train(args):
             params['lr'] *= args.decay
         loss_train.append(loss_train_batch)
         loss_val.append(loss_val_batch)
-        np.savetxt("NeuralNetwork/Results/New_regular_siamese/{}_Train_batch_res.csv".format(epoch), np.array(loss_train))
-        np.savetxt("NeuralNetwork/Results/New_regular_siamese/{}_Valid_batch_results.csv".format(epoch), np.array(loss_val))
-        np.savetxt("NeuralNetwork/Results/New_regular_siamese/{}_Valid_Loss_per_epoch.csv".format(epoch), np.array(valid_epoch))
-        np.savetxt("NeuralNetwork/Results/New_regular_siamese/{}_Train_Loss_per_epoch.csv".format(epoch), np.array(train_epoch))
-        np.savetxt("NeuralNetwork/Results/New_regular_siamese/{}_Valid_ACC_per_epoch.csv".format(epoch), np.array(val_accuracies))
-        np.savetxt("NeuralNetwork/Results/New_regular_siamese/{}_Train_ACC_per_epoch.csv".format(epoch), np.array(train_accuracies))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedSiamese/{}_Train_batch_res.csv".format(epoch), np.array(loss_train))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedSiamese/{}_Valid_batch_results.csv".format(epoch), np.array(loss_val))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedSiamese/{}_Valid_Loss_per_epoch.csv".format(epoch), np.array(valid_epoch))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedSiamese/{}_Train_Loss_per_epoch.csv".format(epoch), np.array(train_epoch))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedSiamese/{}_Valid_ACC_per_epoch.csv".format(epoch), np.array(val_accuracies))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedSiamese/{}_Train_ACC_per_epoch.csv".format(epoch), np.array(train_accuracies))
 
 
 def save_checkpoint(model, optim, epoch, args):
     state = {'state_dict': model.state_dict(),
              'optimizer': optim.state_dict(),
              'epoch': epoch + 1}
-    path_to_file = 'NeuralNetwork/Checkpoints/New_regular_siamese/lr_{}_decay_{}'.format(int(args.lr * 1000),
+    path_to_file = 'NeuralNetwork/Checkpoints/April_ImprovedSiamese/lr_{}_decay_{}'.format(int(args.lr * 1000),
                                                                                 int(args.decay * 100))
     if not os.path.exists(path_to_file):
         os.makedirs(path_to_file)
-    torch.save(state, os.path.join(path_to_file, 'new_reg_siamese_{}.pth.tar'.format(epoch)))
+    torch.save(state, os.path.join(path_to_file, 'april_siamese_{}.pth.tar'.format(epoch)))
 
 
 def bce_loss(pred, label):

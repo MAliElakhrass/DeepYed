@@ -9,10 +9,9 @@ import random
 
 
 class UpdatedSiameseDataset(Dataset):
-    def __init__(self, mode="train", length=4000000, chunk_size=100000, labels_size=2000000):
+    def __init__(self, mode="train", length=4000000, chunk_size=100000):
         self.length = length
         self.chunk_size = chunk_size
-        self.label_size = labels_size
         self.mode = mode
         if self.mode == "train":
             self.features_directory = "NeuralNetwork/PreprocessedData/Features/Train/"
@@ -33,10 +32,13 @@ class UpdatedSiameseDataset(Dataset):
         self.loaded_data = self.merge_features()
         # np.load(self.labels + str(self.features_files_length[0]) + ".npy")
         self.loaded_labels = self.merge_labels()
+        p = np.random.permutation(len(self.loaded_labels))
+        self.loaded_data = self.loaded_data[p]
+        self.loaded_labels = self.loaded_labels[p]
         list_indices_wins = np.where(self.loaded_labels == 1)
         list_indices_losses = np.where(self.loaded_labels == -1)
         self.loaded_wins = np.take(self.loaded_data, list_indices_wins[0], axis=0)
-        self.loaded_losses =np.take(self.loaded_data, list_indices_losses[0], axis=0)
+        self.loaded_losses = np.take(self.loaded_data, list_indices_losses[0], axis=0)
         print("test")
 
     def __getitem__(self, index):
@@ -47,7 +49,7 @@ class UpdatedSiameseDataset(Dataset):
         permutation_order = random.randint(0, 1)
 
         if permutation_order == 0:
-            input_moves = np.hstack((winning_move, losing_move))
+            input_moves = np.hstack((losing_move, winning_move))
             input_moves = torch.from_numpy(input_moves).type(torch.FloatTensor)
             label = torch.from_numpy(np.array([1, 0])).type(torch.FloatTensor)
             return (input_moves, label)

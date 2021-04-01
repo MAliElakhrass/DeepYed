@@ -12,28 +12,28 @@ from torch.utils.data import DataLoader
 from torch.optim import Adam
 from torch.nn import functional as F
 
-from Datasets.UpdatedAEDataset import *
-from Datasets.MultiplesFilesAEDataset import *
+from Datasets.AprilAEDataset import *
 
 from Architecture.ImprovedAutoEncoder import ImprovedAutoEncoder
 
 from Architecture.AutoEncoder import AutoEncoder
 
 def train(args):
-    # train_dataset = UpdatedAEDataset(
-    #     mode="train")
-    # val_dataset = UpdatedAEDataset(
-    #     mode="valid")
-    train_dataset = MultiplesFilesAEDataset(
-        mode="train", length=4000000, chunk_size=400000)
+    full_bitboards = np.load("NeuralNetwork\\PreprocessedData\\Bitboards\\all_bitboards.npy")
 
-    val_dataset = MultiplesFilesAEDataset(
-        mode="valid", length=500000, chunk_size=50000)
+    np.random.shuffle(full_bitboards)
+    train_bitboards = full_bitboards[:int(len(full_bitboards) * .8)]
+    validation_bitboards = full_bitboards[int(len(full_bitboards) * .8):]
+    train_dataset = AprilAEDataset(
+        data=train_bitboards)
+
+    val_dataset = AprilAEDataset(
+        data=validation_bitboards)
 
     train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
     valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True)
 
-    autoencoder = AutoEncoder().to(device)
+    autoencoder = ImprovedAutoEncoder().to(device)
 
     optimizer = Adam(autoencoder.parameters(), lr=args.lr)
     loss_train, loss_val = [], []
@@ -98,21 +98,21 @@ def train(args):
             params['lr'] *= args.decay
         loss_train.append(loss_train_batch)
         loss_val.append(loss_val_batch)
-        np.savetxt("NeuralNetwork/Results/New_regular_AE/{}_Train_batch_res.csv".format(epoch), np.array(loss_train))
-        np.savetxt("NeuralNetwork/Results/New_regular_AE/{}_Valid_batch_results.csv".format(epoch), np.array(loss_val))
-        np.savetxt("NeuralNetwork/Results/New_regular_AE/{}_Valid_Res_per_epoch.csv".format(epoch), np.array(valid_epoch))
-        np.savetxt("NeuralNetwork/Results/New_regular_AE/{}_Train_Res_per_epoch.csv".format(epoch), np.array(train_epoch))
-        np.savetxt("NeuralNetwork/Results/New_regular_AE/{}_Differences.csv".format(epoch), np.array(all_differences))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedAE/{}_Train_batch_res.csv".format(epoch), np.array(loss_train))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedAE/{}_Valid_batch_results.csv".format(epoch), np.array(loss_val))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedAE/{}_Valid_Res_per_epoch.csv".format(epoch), np.array(valid_epoch))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedAE/{}_Train_Res_per_epoch.csv".format(epoch), np.array(train_epoch))
+        np.savetxt("NeuralNetwork/Results/April_ImprovedAE/{}_Differences.csv".format(epoch), np.array(all_differences))
 
 
 def save_checkpoint(model, optim, epoch, args):
     state = {'state_dict': model.state_dict(),
              'optimizer': optim.state_dict(),
              'epoch': epoch + 1}
-    path_to_file = 'NeuralNetwork/Checkpoints/New_regular_AE/lr_{}_decay_{}'.format(int(args.lr*1000), int(args.decay*100))
+    path_to_file = 'NeuralNetwork/Checkpoints/April_ImprovedAE/lr_{}_decay_{}'.format(int(args.lr*1000), int(args.decay*100))
     if not os.path.exists(path_to_file):
         os.makedirs(path_to_file)
-    torch.save(state, os.path.join(path_to_file, 'new_reg_autoencoder_{}.pth.tar'.format(epoch)))
+    torch.save(state, os.path.join(path_to_file, 'april_autoencoder_{}.pth.tar'.format(epoch)))
 
 
 def bce_loss(decoder_result, actual_data):
@@ -124,13 +124,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='AutoEncoder Training (DBN, Pos2Vec) as nonlinear feature extractor')
 
     # At first the learning rate starts from 0.005 and should be multiplied by 0.98 at the end of every epoch
-    parser.add_argument('--lr', type=float, default=0.005, help='The learning rate starts from 0.005, 0.005')
+    parser.add_argument('--lr', type=float, default=5e-3, help='The learning rate starts from 0.005, 0.005')
 
     parser.add_argument('--decay', type=float, default=0.98, help='After each epoch the lr is multiplied by this '
                                                                   'decay, 0.98')
 
     parser.add_argument('--epochs', type=int, default=200, help='The number of epochs to train, 200')
-    parser.add_argument('--batch-size', type=int, default=50000, help='The batch size of the input, 50000')
+    parser.add_argument('--batch-size', type=int, default=128, help='The batch size of the input, 50000')
 
     parser.add_argument('--checkpoint_path', default='Checkpoints/top_autoencoder.pth.tar', type=str)
     parser.add_argument('--train', default=True, action='store_true')
