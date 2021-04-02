@@ -23,6 +23,11 @@ class DataGenerator:
         return valid_moves
 
     def get_bitboard(self, board):
+        """
+        Convert a board to bitboard of size 773
+        :param board:
+        :return:
+        """
         bitboard = np.zeros(2 * 6 * 64 + 5)
 
         piece_indices = {'p': 0,
@@ -49,10 +54,10 @@ class DataGenerator:
     def add_move(self, index, white=False):
         """
         This function will add 10 random moves for a game
+        :param white:
         :param index:
         :return: new index
         """
-
         valid_moves = self.get_valid_moves()
 
         # For 10 random moves
@@ -65,7 +70,7 @@ class DataGenerator:
             if index > MAX_MOVES:
                 break
 
-            if i in selected_moves:
+            if move in selected_moves:
                 if white:
                     self.white_moves[index] = self.get_bitboard(board)
                 else:
@@ -86,7 +91,7 @@ class DataGenerator:
             if count % 1000 == 0:
                 print("Game Number: {count}\twhite moves: {white_moves}\tblack moves: {black_moves}".format(
                     count=count,
-                    black_moves=black_moves_count,
+                    black_moves=white_moves_count,
                     white_moves=black_moves_count))
 
             self.game = chess.pgn.read_game(data_file)
@@ -98,5 +103,14 @@ class DataGenerator:
             if self.game.headers["Result"] == "0-1" and black_moves_count < MAX_MOVES:
                 black_moves_count = self.add_move(black_moves_count)
 
+            count += 1
+
+    def save(self):
         np.save('./data/white.npy', self.white_moves)
         np.save('./data/black.npy', self.black_moves)
+
+
+if __name__ == '__main__':
+    data_generator = DataGenerator()
+    data_generator.iterate_over_data()
+    data_generator.save()
