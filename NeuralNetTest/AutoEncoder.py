@@ -75,7 +75,7 @@ class AutoEncoder:
 
         my_callbacks = [
             EarlyStopping(patience=3),
-            ModelCheckpoint(filepath='./weights/model.{epoch:02d}-{val_loss:.2f}.h5', save_format='tf')
+            ModelCheckpoint(filepath='./weights/model.{epoch:02d}-{val_loss:.2f}', save_format='tf')
         ]
 
         self.model.fit(self.X_train, self.X_train, validation_data=(self.X_val, self.X_val), epochs=epochs,
