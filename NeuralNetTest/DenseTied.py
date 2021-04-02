@@ -68,3 +68,21 @@ class DenseTied(layers.Layer):
         if self.activation is not None:
             output = self.activation(output)
         return output
+
+    def get_config(self):
+        config = super().get_config().copy()
+        config.update({
+            'tied_to': self.tied_to,
+            'units': self.units,
+            'activation': self.activation,
+            'use_bias': self.use_bias,
+            'kernel_initializer': self.kernel_initializer,
+            'bias_initializer': self.bias_initializer,
+            'activity_regularizer': self.activity_regularizer,
+            'kernel_constraint': self.kernel_constraint,
+            'bias_constraint': self.bias_constraint,
+            'input_spec': self.input_spec,
+            'supports_masking': self.supports_masking
+        })
+
+        return config

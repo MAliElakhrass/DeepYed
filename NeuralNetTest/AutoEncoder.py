@@ -42,7 +42,7 @@ class AutoEncoder:
         self.encoder_model = Model(input_layer, output, name='encoder')
         self.encoder_model.summary()
 
-        return self.encoder_model()
+        return self.encoder_model
 
     def __decoder(self):
         input_layer = Input(shape=(100,))
@@ -54,7 +54,7 @@ class AutoEncoder:
         self.decoder_model = Model(input_layer, output, name='decoder')
         self.decoder_model.summary()
 
-        return self.decoder_model()
+        return self.decoder_model
 
     def encoder_decoder(self, load=0):
         input_layer = Input(shape=(773,))
@@ -75,7 +75,7 @@ class AutoEncoder:
 
         my_callbacks = [
             EarlyStopping(patience=3),
-            ModelCheckpoint(filepath='./weights/model.{epoch:02d}-{val_loss:.2f}.h5')
+            ModelCheckpoint(filepath='./weights/model.{epoch:02d}-{val_loss:.2f}.h5', save_format='tf')
         ]
 
         self.model.fit(self.X_train, self.X_train, validation_data=(self.X_val, self.X_val), epochs=epochs,
