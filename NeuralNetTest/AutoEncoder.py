@@ -74,7 +74,7 @@ class AutoEncoder:
         # self.model.save('./weights3/autoencoder_v8.h5')
 
     def load_data3(self):
-        positions = 1400000
+        positions = 2400000-100000
         val_positions = 100000
         num_per_file = 100000
         self.positions = np.zeros((2*positions, 773), dtype='float32')
@@ -89,12 +89,6 @@ class AutoEncoder:
                 self.positions_val[val_positions + start:val_positions + start + num_per_file] = np.load('./data5/black_val' + str(i + 1) + '.npy')
 
     def shuffle_positions(self):
-        # print("---Shuffling white positions---")
-        # random.shuffle(self.white_positions)
-        # gc.collect()
-        # print("---Shuffling black positions---")
-        # random.shuffle(self.black_positions)
-        # gc.collect()
         print("Shuffling positions")
         np.random.shuffle(self.positions)
         gc.collect()

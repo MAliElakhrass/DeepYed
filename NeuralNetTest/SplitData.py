@@ -2,15 +2,15 @@ import numpy as np
 
 
 if __name__ == '__main__':
-    num_of_positions = 1500000
+    num_of_positions = 2400000
     num_of_positions_per_file = 100000
     num_of_train_positions = int(num_of_positions-100000)
     whites = np.zeros((num_of_positions, 773), dtype='float32')
     blacks = np.zeros((num_of_positions, 773), dtype='float32')
-    for i in range(15):
+    for i in range(24):
         print(i + 1)
-        whites[i * 100000:(i + 1) * 100000] = np.load('./data_gen/white' + str(i + 1) + '.npy')
-        blacks[i * 100000:(i + 1) * 100000] = np.load('./data_gen/black' + str(i + 1) + '.npy')
+        whites[i * 100000:(i + 1) * 100000] = np.load('./data4/white' + str(i + 1) + '.npy')
+        blacks[i * 100000:(i + 1) * 100000] = np.load('./data4/black' + str(i + 1) + '.npy')
 
     print("Shuffling white positions")
     np.random.shuffle(whites)
