@@ -91,8 +91,8 @@ class DataGenerator:
             if count % 1000 == 0:
                 print("Game Number: {count}\twhite moves: {white_moves}\tblack moves: {black_moves}".format(
                     count=count,
-                    black_moves=white_moves_count,
-                    white_moves=black_moves_count))
+                    black_moves=black_moves_count,
+                    white_moves=white_moves_count))
 
             self.game = chess.pgn.read_game(data_file)
             if not self.game:
