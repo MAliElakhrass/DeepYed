@@ -4,14 +4,14 @@ import random
 
 
 # CONSTANTS
-MAX_MOVES = 3000000
+MAX_MOVES = 50000
 
 
 class DataGenerator:
     def __init__(self, data_path='./data/games_data.pgn'):
-        self.white_moves = np.zeros((MAX_MOVES, 2 * 6 * 64 + 5))
-        self.black_moves = np.zeros((MAX_MOVES, 2 * 6 * 64 + 5))
-        self.game = chess.pgn.Game()
+        self.white_moves = np.zeros((MAX_MOVES, 2 * 6 * 64 + 5), dtype=np.int8)
+        self.black_moves = np.zeros((MAX_MOVES, 2 * 6 * 64 + 5), dtype=np.int8)
+        self.game = None
         self.data_path = data_path
 
     def get_valid_moves(self):
@@ -51,7 +51,7 @@ class DataGenerator:
 
         return bitboard
 
-    def add_move(self, index, white=False):
+    def add_move(self, index, white):
         """
         This function will add 10 random moves for a game
         :param white:
@@ -95,13 +95,13 @@ class DataGenerator:
                     white_moves=white_moves_count))
 
             self.game = chess.pgn.read_game(data_file)
-            if not self.game:
+            if not self.game or (white_moves_count >= MAX_MOVES and black_moves_count >= MAX_MOVES):
                 break
 
             if self.game.headers["Result"] == "1-0" and white_moves_count < MAX_MOVES:
-                white_moves_count = self.add_move(white_moves_count)
+                white_moves_count = self.add_move(white_moves_count, white=True)
             if self.game.headers["Result"] == "0-1" and black_moves_count < MAX_MOVES:
-                black_moves_count = self.add_move(black_moves_count)
+                black_moves_count = self.add_move(black_moves_count, white=False)
 
             count += 1
 
