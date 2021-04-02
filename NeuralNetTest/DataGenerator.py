@@ -4,7 +4,7 @@ import random
 
 
 # CONSTANTS
-MAX_MOVES = 50000
+MAX_MOVES = 3000000
 
 
 class DataGenerator:
