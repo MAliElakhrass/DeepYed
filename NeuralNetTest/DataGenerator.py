@@ -4,7 +4,7 @@ import random
 
 
 # CONSTANTS
-MAX_MOVES = 2400000
+MAX_MOVES = 3000000
 
 
 class DataGenerator:
@@ -67,7 +67,7 @@ class DataGenerator:
         for i, move in enumerate(self.game.mainline_moves()):
             board.push(move)
 
-            if index > MAX_MOVES:
+            if index >= MAX_MOVES:
                 break
 
             if move in selected_moves:
