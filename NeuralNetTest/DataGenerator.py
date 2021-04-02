@@ -28,7 +28,7 @@ class DataGenerator:
         :param board:
         :return:
         """
-        bitboard = np.zeros(2 * 6 * 64 + 5)
+        bitboard = np.zeros(2 * 6 * 64 + 5, dtype=np.int8)
 
         piece_indices = {'p': 0,
                          'n': 1,

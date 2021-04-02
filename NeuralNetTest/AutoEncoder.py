@@ -19,18 +19,20 @@ class AutoEncoder:
         self.decoder_model = None
 
     def load_data(self):
+        print('Start Loading Data')
         white_data_path = "./data/white.npy"
         black_data_path = "./data/black.npy"
 
-        data = np.zeros((MAX_MOVES * 2, 773))
+        data = np.zeros((MAX_MOVES * 2, 773), dtype=np.int8)
         data[:MAX_MOVES] = np.load(white_data_path)
         data[MAX_MOVES:] = np.load(black_data_path)
 
         np.random.shuffle(data)
 
         self.X_train, self.X_val = train_test_split(data, test_size=0.20, random_state=47)
+        print('Loading Data Done!')
 
-    def encoder(self):
+    def __encoder(self):
         input_layer = Input(shape=(773,))
         hidden_1 = Dense(600, activation='relu')(input_layer)
         hidden_2 = Dense(400, activation='relu')(hidden_1)
@@ -40,7 +42,9 @@ class AutoEncoder:
         self.encoder_model = Model(input_layer, output, name='encoder')
         self.encoder_model.summary()
 
-    def decoder(self):
+        return self.encoder_model()
+
+    def __decoder(self):
         input_layer = Input(shape=(100,))
         hidden_1 = DenseTied(200, activation='relu', tied_to=self.encoder_model.layers[4])(input_layer)
         hidden_2 = DenseTied(400, activation='relu', tied_to=self.encoder_model.layers[3])(hidden_1)
@@ -50,13 +54,15 @@ class AutoEncoder:
         self.decoder_model = Model(input_layer, output, name='decoder')
         self.decoder_model.summary()
 
+        return self.decoder_model()
+
     def encoder_decoder(self, load=0):
         input_layer = Input(shape=(773,))
         if load:
             self.encoder_model = load_model('./Pos2Vec/encoder_v1/encoder_epoch66')
         else:
-            self.encoder()
-        self.decoder()
+            self.__encoder()
+        self.__decoder()
 
         ec_out = self.encoder_model(input_layer)
         dc_out = self.decoder_model(ec_out)
@@ -73,7 +79,7 @@ class AutoEncoder:
         ]
 
         self.model.fit(self.X_train, self.X_train, validation_data=(self.X_val, self.X_val), epochs=epochs,
-                       batch_size=batch_size, callbacks=my_callbacks, verbose=2)
+                       batch_size=batch_size, callbacks=my_callbacks, verbose=1)
 
     def save(self):
         self.encoder_model.save('./weights/encoder.h5')
