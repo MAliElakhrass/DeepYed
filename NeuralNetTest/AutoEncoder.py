@@ -70,7 +70,7 @@ class AutoEncoder:
         self.model = Model(input_layer, dc_out, name='autoencoder')
         self.model.summary()
 
-    def train(self, batch_size=256, epochs=20):
+    def train(self, batch_size=256, epochs=200):
         self.model.compile(optimizer='adam', loss='binary_crossentropy')
 
         my_callbacks = [
@@ -91,5 +91,5 @@ class AutoEncoder:
 if __name__ == '__main__':
     ae = AutoEncoder()
     ae.encoder_decoder(load=0)
-    ae.train(batch_size=256, epochs=100)
+    ae.train(batch_size=256, epochs=200)
     ae.save()
