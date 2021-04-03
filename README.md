@@ -60,7 +60,7 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#Neural Network">Neural Network</a></li>
+    <li><a href="#neural-network">Neural Network</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -129,12 +129,32 @@ This is an example of how to list things you need to use the software and how to
 
 
 <!-- USAGE EXAMPLES -->
-## Usage
+## Neural Network
+### Dataset
+First, we used the CCRL 40/15 Dataset containing 1 233 013 games where Whites win for 34.4%, Black win for 25.2% and draws are 40.5% of the dataset.Use this space to show useful examples of how a project can be used.
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+### Preprocessing
+We decided to go with a preprocessing inspired by the one used by the authors of DeepChess. Therefore, we first ignored all th draws since they apparently did not add any value. We just kept the wins and losses. We extracted 10 random moves per game while making sure these moves did not end in a capture from either sides.
+Also, these moves were not one of the first five. Each move was respresented by the state of the board with the actual move in it. The board was encoded into a 773 binary bit-string array called bitboard. 
+This amount of bits is obtained by taking in consideration the two sides (White and Black), the 6 types of pieces (queen, king, pawn, bishop rook and knight),
+the 64 squares on a board (8 x 8) and the five last bits are for the side to move (White's turn or Black's) and the castling rights. 
+Indeed, the last 4 bits indicate if the Whites can castle kingside, if the Whites can castle queenside, if the Blacks can castle kingside and if the Blacks can castle queenside.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+### Implementation 
+Our neural network has two parts, the autoencoder part and a siamese network. The autoencoder consists of five fully connected layers 773-600-400-200-100. First, we added batch normalisation layers
+and a Leaky Relu activation function because it got better than the official implmentation of DeepChess which did not have any regularization and the activation functions were ReLU. 
+The learning rate used is 0.005 and it was multiplied by 0.98 after each epoch like indicated by the authors of DeepChess. The autoencoder was trained for 200 epochs. The results were not very good for this
+first architecture. The autoencoder seemed to overfit after 7 epochs. Therefore, we tried another architecture which used DenseTied layers. BLA BLA BLA
 
+The Siamese network had to take two inputs. One input would be a a move from a win and one move that ended up in a loss. Two bitboards are passed to the trained encoder of the autoencoder to extract important features.
+The two obtained representations  have 100 features each. The architecture used is 400-200-100-2. The loss used to train this part is the binary cross entropy.
+
+### Results
+The results are not as expected. 
+
+_For more details about DeepChess, please refer to the [Paper](https://arxiv.org/pdf/1711.09667.pdf)_
+
+_For more details about the CCRL 40/15 Dataset, please refer to this [Website](https://ccrl.chessdom.com/ccrl/4040/)_
 
 
 <!-- ROADMAP -->
