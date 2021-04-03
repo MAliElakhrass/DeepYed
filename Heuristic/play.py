@@ -94,7 +94,7 @@ class PlayChess():
                 self.board.push(user_move)
 
     def play_engine(self):
-        stockfish = Stockfish('./../engines/stockfish-12/stockfish_20090216_x64_bmi2.exe',
+        stockfish = Stockfish('./../engines/stockfish-12/stockfish.exe',
                               parameters={"Threads": 4, "Skill Level": 1})
 
         game = chess.pgn.Game()
