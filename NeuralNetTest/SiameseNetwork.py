@@ -66,11 +66,6 @@ class DeepYed:
         self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['acc'])
         self.model.summary()
 
-        """
-        for i, w in enumerate(self.model.weights):
-            print(i, w.name)
-        """
-
         my_callbacks = [
             EarlyStopping(patience=5),
             ModelCheckpoint(filepath='./model/model.{epoch:02d}-{val_loss:.2f}.h5')
