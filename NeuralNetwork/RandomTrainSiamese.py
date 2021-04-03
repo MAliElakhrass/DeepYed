@@ -20,8 +20,8 @@ from Architecture.SiameseNet import SiameseNet
 from Architecture.ImprovedSiamese import ImprovedSiamese
 
 def train(args):
-    full_features = np.load("NeuralNetwork\\PreprocessedData\\Features\\all_features.npy")
-    all_labels = np.load("NeuralNetwork\\PreprocessedData\\Labels\\my_labels.npy")
+    full_features = np.load("NeuralNetwork\\PreprocessedData\\Features\\all_features_5M.npy")
+    all_labels = np.load("NeuralNetwork\\PreprocessedData\\Labels\\all_labels_5M.npy")
 
     # Shuffle data the same way for features and labels
     shuffled_order = np.random.permutation(len(all_labels))
@@ -50,10 +50,10 @@ def train(args):
         correct = 0
         # Create new dataloader at every epoch
         train_dataset = RandomSiameseDataset(
-            data=train_features, labels=train_labels, length=100000)
+            data=train_features, labels=train_labels, length=1000000)
 
         val_dataset = RandomSiameseDataset(
-            data=valdidation_features, labels=valdidation_labels, length=10000)
+            data=valdidation_features, labels=valdidation_labels, length=100000)
 
         train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
         valid_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True)
