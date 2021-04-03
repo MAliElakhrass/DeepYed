@@ -51,10 +51,10 @@ class DeepYed:
 
         combined = concatenate([encoder_left, encoder_right])
 
-        layer1 = Dense(400, activation='relu')(combined)
-        layer2 = Dense(200, activation='relu')(layer1)
-        layer3 = Dense(100, activation='relu')(layer2)
-        output_layer = Dense(2, activation='sigmoid')(layer3)
+        layer1 = Dense(400, activation='relu', name='layer1')(combined)
+        layer2 = Dense(200, activation='relu', name='layer2')(layer1)
+        layer3 = Dense(100, activation='relu', name='layer3')(layer2)
+        output_layer = Dense(2, activation='sigmoid', name='layerOutput')(layer3)
 
         self.model = Model(inputs=[input_layer1, input_layer2], outputs=output_layer)
         self.model.summary()
@@ -66,9 +66,14 @@ class DeepYed:
         self.model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['acc'])
         self.model.summary()
 
+        """
+        for i, w in enumerate(self.model.weights):
+            print(i, w.name)
+        """
+
         my_callbacks = [
             EarlyStopping(patience=5),
-            # ModelCheckpoint(filepath='./model/model.{epoch:02d}-{val_loss:.2f}.h5')
+            ModelCheckpoint(filepath='./model/model.{epoch:02d}-{val_loss:.2f}.h5')
         ]
 
         history = self.model.fit_generator(train_generator, validation_data=val_generator, epochs=epochs, shuffle=True, callbacks=my_callbacks)

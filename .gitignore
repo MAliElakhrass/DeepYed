@@ -148,3 +148,7 @@ NeuralNetTest/data_gen/
 NeuralNetTest/Pos2Vec/
 
 NeuralNetTest/old/
+
+NeuralNetTest/model/
+
+NeuralNetTest/weights/
