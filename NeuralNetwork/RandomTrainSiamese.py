@@ -19,9 +19,10 @@ from Architecture.SmallerSiamese import SmallerSiamese
 from Architecture.SiameseNet import SiameseNet
 from Architecture.ImprovedSiamese import ImprovedSiamese
 
-def train(args):
-    full_features = np.load("NeuralNetwork\\PreprocessedData\\Features\\all_features_5M.npy")
-    all_labels = np.load("NeuralNetwork\\PreprocessedData\\Labels\\all_labels_5M.npy")
+
+def train(args, load=False):
+    full_features = np.load("NeuralNetwork\\PreprocessedData\\Features\\all_features.npy")
+    all_labels = np.load("NeuralNetwork\\PreprocessedData\\Labels\\all_labels.npy")
 
     # Shuffle data the same way for features and labels
     shuffled_order = np.random.permutation(len(all_labels))
@@ -35,13 +36,28 @@ def train(args):
 
     # The number specified here should not be bigger than the number of losses or number of wins, otherwise an index error will occur
 
-
     siamese_net = ImprovedSiamese().to(device)
     optimizer = Adam(siamese_net.parameters(), lr=args.lr)
-    loss_train, loss_val = [], []
-    train_epoch, valid_epoch = [], []
-    val_accuracies, train_accuracies = [], []
-    for epoch in range(args.epochs):
+    if load:
+        loaded_state = torch.load('NeuralNetwork/Checkpoints/April_Reg_Siamese/lr_10_decay_99/new_rand_siamese_149.pth.tar',
+                        map_location=lambda storage, loc: storage)
+        siamese_net.load_state_dict(loaded_state["state_dict"])
+        optimizer.load_state_dict(loaded_state['optimizer'])
+        new_epoch = loaded_state['epoch']
+
+        loss_train = list(np.genfromtxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Train_batch_res.csv".format(new_epoch - 1)))
+        loss_val = list(np.genfromtxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Valid_batch_results.csv".format(new_epoch - 1)))
+        valid_epoch = list(np.genfromtxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Valid_Loss_per_epoch.csv".format(new_epoch - 1)))
+        train_epoch = list(np.genfromtxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Train_Loss_per_epoch.csv".format(new_epoch - 1)))
+        val_accuracies = list(np.genfromtxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Valid_ACC_per_epoch.csv".format(new_epoch - 1)))
+        train_accuracies = list(np.genfromtxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Train_ACC_per_epoch.csv".format(new_epoch - 1)))
+
+    else:
+        new_epoch = 0
+        loss_train, loss_val = [], []
+        train_epoch, valid_epoch = [], []
+        val_accuracies, train_accuracies = [], []
+    for epoch in range(new_epoch, args.epochs + 1):
 
         # Training loop
         siamese_net.train()
@@ -77,8 +93,9 @@ def train(args):
                 training_bar.update()
 
             train_epoch.append(train_loss / len(train_loader.dataset))
-            train_accuracies.append(correct/len(train_loader.dataset))
-            training_bar.set_postfix_str("Training Mean loss: {:.5f}, Training Accuracy: {:.5f} ".format((train_loss / len(train_loader.dataset)), (correct/len(train_loader.dataset))))
+            train_accuracies.append(correct / len(train_loader.dataset))
+            training_bar.set_postfix_str("Training Mean loss: {:.5f}, Training Accuracy: {:.5f} ".format(
+                (train_loss / len(train_loader.dataset)), (correct / len(train_loader.dataset))))
 
         # Validation loop
         loss_val_batch = []
@@ -101,8 +118,9 @@ def train(args):
                     val_bar.update()
 
             valid_epoch.append(val_loss / len(valid_loader.dataset))
-            val_accuracies.append(correct/len(valid_loader.dataset))
-            val_bar.set_postfix_str("Validation Mean loss: {:.5f}, Validation Accuracy: {:.5f}".format((val_loss / len(valid_loader.dataset)), (correct/len(valid_loader.dataset))))
+            val_accuracies.append(correct / len(valid_loader.dataset))
+            val_bar.set_postfix_str("Validation Mean loss: {:.5f}, Validation Accuracy: {:.5f}".format(
+                (val_loss / len(valid_loader.dataset)), (correct / len(valid_loader.dataset))))
 
         save_checkpoint(siamese_net, optimizer, epoch, args)
         # At first the learning rate starts from 0.01 and should be multiplied by 0.99 at the end of every epoch
@@ -110,20 +128,25 @@ def train(args):
             params['lr'] *= args.decay
         loss_train.append(loss_train_batch)
         loss_val.append(loss_val_batch)
-        np.savetxt("NeuralNetwork/Results/NEWRandomSiamese/{}_Train_batch_res.csv".format(epoch), np.array(loss_train))
-        np.savetxt("NeuralNetwork/Results/NEWRandomSiamese/{}_Valid_batch_results.csv".format(epoch), np.array(loss_val))
-        np.savetxt("NeuralNetwork/Results/NEWRandomSiamese/{}_Valid_Loss_per_epoch.csv".format(epoch), np.array(valid_epoch))
-        np.savetxt("NeuralNetwork/Results/NEWRandomSiamese/{}_Train_Loss_per_epoch.csv".format(epoch), np.array(train_epoch))
-        np.savetxt("NeuralNetwork/Results/NEWRandomSiamese/{}_Valid_ACC_per_epoch.csv".format(epoch), np.array(val_accuracies))
-        np.savetxt("NeuralNetwork/Results/NEWRandomSiamese/{}_Train_ACC_per_epoch.csv".format(epoch), np.array(train_accuracies))
+        np.savetxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Train_batch_res.csv".format(epoch), np.array(loss_train))
+        np.savetxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Valid_batch_results.csv".format(epoch),
+                   np.array(loss_val))
+        np.savetxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Valid_Loss_per_epoch.csv".format(epoch),
+                   np.array(valid_epoch))
+        np.savetxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Train_Loss_per_epoch.csv".format(epoch),
+                   np.array(train_epoch))
+        np.savetxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Valid_ACC_per_epoch.csv".format(epoch),
+                   np.array(val_accuracies))
+        np.savetxt("NeuralNetwork/Results/April_Reg_Siamese/{}_Train_ACC_per_epoch.csv".format(epoch),
+                   np.array(train_accuracies))
 
 
 def save_checkpoint(model, optim, epoch, args):
     state = {'state_dict': model.state_dict(),
              'optimizer': optim.state_dict(),
              'epoch': epoch + 1}
-    path_to_file = 'NeuralNetwork/Checkpoints/NEWRandomSiamese/lr_{}_decay_{}'.format(int(args.lr * 1000),
-                                                                                int(args.decay * 100))
+    path_to_file = 'NeuralNetwork/Checkpoints/April_Reg_Siamese/lr_{}_decay_{}'.format(int(args.lr * 1000),
+                                                                                       int(args.decay * 100))
     if not os.path.exists(path_to_file):
         os.makedirs(path_to_file)
     torch.save(state, os.path.join(path_to_file, 'new_rand_siamese_{}.pth.tar'.format(epoch)))
@@ -158,9 +181,7 @@ if __name__ == "__main__":
         device = torch.device("cuda")
 
     args = parser.parse_args()
-
+    load=True
     if args.train:
-        train(args)
+        train(args, load)
 
-    if args.eval:
-        eval(args)

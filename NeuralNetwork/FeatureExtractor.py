@@ -72,14 +72,7 @@ class FeatureExtractor:
 
 
 if __name__ == "__main__":
-    # fe_train = FeatureExtractor(mode="train")
-    # fe_train.extract()
-    #
-    # fe_val = FeatureExtractor(mode="valid")
-    # fe_val.extract()
-    #
-    # fe_val = FeatureExtractor(mode="test")
-    # fe_val.extract()
-    test = np.load("NeuralNetwork\\PreprocessedData\\Features\\Train\\all_features.npy")
-    # bit = np.load("NeuralNetwork\\PreprocessedData\\Bitboards\\Train\\3600000.npy")
+    fe = FeatureExtractor()
+    fe.extract()
+
     print("test")

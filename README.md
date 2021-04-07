@@ -60,6 +60,7 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li><a href="#heuristic-approach">Heuristic Approach</a></li>
     <li><a href="#neural-network">Neural Network</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
@@ -76,8 +77,7 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-There are many great README templates available on GitHub, however, I didn't find one that really suit my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
-
+This project is our take on building an automated chess player. We first started building an heuristic, a neural network and a reinforcement learning approach.
 Here's why:
 * Your time should be focused on creating something amazing. A project that solves a problem and helps others
 * You shouldn't be doing the same tasks over and over like creating a README from scratch
@@ -89,10 +89,12 @@ A list of commonly used resources that I find helpful are listed in the acknowle
 
 ### Built With
 
-This section should list any major frameworks that you built your project using. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
-* [Laravel](https://laravel.com)
+This section lists any the major frameworks that we built our project using. 
+* [Pytorch](https://pytorch.org/)
+* [Tensorflow](https://www.tensorflow.org/)
+* [Python](https://www.python.org/)
+* [CUDA](https://developer.nvidia.com/cuda-toolkit)
+* [python-chess](https://python-chess.readthedocs.io/en/latest)
 
 
 
@@ -126,6 +128,11 @@ This is an example of how to list things you need to use the software and how to
    const API_KEY = 'ENTER YOUR API';
    ```
 
+## Heuristic approach
+We used the Negamax algorithm which is a variant of the minimax search.
+
+_For more details on this algorithm, please refer to:  [Website](https://en.wikipedia.org/wiki/Negamax)_
+ 
 
 
 <!-- USAGE EXAMPLES -->
@@ -135,7 +142,7 @@ First, we used the CCRL 40/15 Dataset containing 1 233 013 games where Whites wi
 
 ### Preprocessing
 We decided to go with a preprocessing inspired by the one used by the authors of DeepChess. Therefore, we first ignored all th draws since they apparently did not add any value. We just kept the wins and losses. We extracted 10 random moves per game while making sure these moves did not end in a capture from either sides.
-Also, these moves were not one of the first five. Each move was respresented by the state of the board with the actual move in it. The board was encoded into a 773 binary bit-string array called bitboard. 
+Also, these moves were not one of the first five. Each move was represented by the state of the board with the actual move in it. The board was encoded into a 773 binary bit-string array called bitboard. 
 This amount of bits is obtained by taking in consideration the two sides (White and Black), the 6 types of pieces (queen, king, pawn, bishop rook and knight),
 the 64 squares on a board (8 x 8) and the five last bits are for the side to move (White's turn or Black's) and the castling rights. 
 Indeed, the last 4 bits indicate if the Whites can castle kingside, if the Whites can castle queenside, if the Blacks can castle kingside and if the Blacks can castle queenside.
@@ -150,7 +157,11 @@ The Siamese network had to take two inputs. One input would be a a move from a w
 The two obtained representations  have 100 features each. The architecture used is 400-200-100-2. The loss used to train this part is the binary cross entropy.
 
 ### Results
-The results are not as expected. 
+The results were not as expected. We first tried to implement a similar architecture to the one presented in the paper of DeepChess. The autoencoder was composed of an encoder of linear four layers
+of 773-600-400-200. The decoder had the following architecture 200-400-600-773 to rebuild the input. All the activation functions used between each layer is a ReLU function and the last activation function is 
+a Sigmoid function. The siamese network used had four linear layers with the following dimensions 200-400-200-100. For this part, ReLU was used as activation function and sigmoid for the last layer. The results were very bad
+with an accuracy of 50%. Then we tried adding some batch normalisation between each layers and changed the activation function to Leaky ReLU and obtained an accuracy of 58% which was better but still very bad. We tried several other
+architecture changing the learning rates, the number of features per layer, the error used but the score was still very bad.
 
 _For more details about DeepChess, please refer to the [Paper](https://arxiv.org/pdf/1711.09667.pdf)_
 

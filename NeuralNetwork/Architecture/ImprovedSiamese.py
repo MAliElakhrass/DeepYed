@@ -5,7 +5,7 @@ from torch import nn
 class ImprovedSiamese(nn.Module):
     def __init__(self):
         super(ImprovedSiamese, self).__init__()
-        self.size_inputs = [200, 400, 200, 100, 2]
+        self.size_inputs = [200, 100, 50, 2]
         self.fc_layers = self.create_fc_layers()
 
     def create_fc_layers(self):
