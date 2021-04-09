@@ -134,7 +134,7 @@ class MCTS:
 
     def play(self, curr_board: chess.Board, prev_action):
         node = self.node_list[str(curr_board), prev_action]
-        pi = np.zeros(8*8*8*8-2-64-64)
+        pi = np.zeros(8*8*8*8*264-64)
 
         if node.extended and node.N != 0:
             for action in node.actions:
@@ -147,7 +147,7 @@ class MCTS:
             if round(sum(pi), 1) != 1.0:
                 print('warning (MCTS extended): Pi.sum()!= 1')
 
-            return self.game_state.read_move(idx_action), pi
+            return self.game_state.get_move(idx_action), pi
 
         else:
             actions = list(curr_board.legal_moves)
@@ -160,4 +160,4 @@ class MCTS:
                 print('warning (MCTS non_extended): Pi.sum()!= 1')
             node = self.extension(node, pi)
 
-            return action[idx_action], pi
+            return actions[idx_action], pi

@@ -101,7 +101,7 @@ class NeuralNetwork:
 
         # min error
         value_loss = F.mse_loss(value.view(-1), winner_opt)
-        policy_loss = -torch.mean(torch.sum(probability_opt*(torch.log(action_probabilities)), -1))
+        policy_loss = -torch.mean(torch.sum(probability_opt*(torch.log(action_probabilities)), 1))
         loss = value_loss + policy_loss
 
         self.optimizer.zero_grad()
