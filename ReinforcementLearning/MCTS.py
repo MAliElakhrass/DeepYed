@@ -157,4 +157,5 @@ class MCTS:
             if round(sum(pi), 1) != 1.0:
                 print('warning (MCTS non_extended): Pi.sum()!= 1')
             node = self.extension(node, pi)
+
             return action[idx_action], pi
