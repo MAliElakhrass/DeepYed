@@ -35,7 +35,7 @@ class GameState:
 
         state_tmp = np.array(state_tmp).reshape(8, 8)
 
-        state = np.zeros(13, 8, 8)
+        state = np.zeros((13, 8, 8))
         for i in range(8):
             for j in range(8):
                 state[state_tmp[i, j], i, j] = 1

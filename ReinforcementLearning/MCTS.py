@@ -1,4 +1,5 @@
 from ReinforcementLearning.GameState import GameState
+from ReinforcementLearning.NeuralNetwork import NeuralNetwork
 from torch import Tensor
 from torch.autograd import Variable
 import chess
@@ -25,13 +26,13 @@ class Node:
 
 
 class MCTS:
-    def __init__(self, iterations, neural_network, device):
+    def __init__(self, iterations, neural_network: NeuralNetwork, device):
         self.c_puct = 1
         self.iterations = iterations
         self.game_state = GameState()
-        self.neural_network = None  # TODO
+        self.neural_network = neural_network  # TODO
         self.device = device
-        self.node_list = {}
+        self.node_list = {(str(chess.Board()), None): Node(chess.Board(), None, 1.0)}
 
     def choose_action(self, node: Node):
         """
@@ -44,7 +45,7 @@ class MCTS:
             node_tmp = node.children[action]
 
             u = self.c_puct * node_tmp.P * math.sqrt(node_tmp.parent.N) / (1 + node_tmp.N)
-            qu.append(u + node_tmp.q)
+            qu.append(u + node_tmp.Q)
 
         idx = np.argmax(qu)
 
@@ -100,8 +101,9 @@ class MCTS:
                 if sum([curr_node.children[act].N for act in curr_node.actions]) != curr_node.N:
                     print('warning (MCTS): total visit time N does not match between parent and children')
 
-    def select_move(self):
-        for _ in range(self.iterations):
+    def simulate(self):
+        for iteration in range(self.iterations):
+            print("MCTS-Iter:", iteration)
             curr_board = chess.Board()
             prev_action = None  # WILL IT WORK? ALWAYS NONE
             curr_node = self.node_list[str(curr_board), prev_action]
@@ -109,12 +111,12 @@ class MCTS:
 
             for i in range(600):
                 state_tmp = Variable(Tensor(self.game_state.get_state(curr_board).reshape(1, 13, 8, 8))).to(self.device)
-                p, v = self.neural_network(state_tmp)
+                p, v = self.neural_network.policy_net(state_tmp)
 
                 if curr_node.extended:
                     curr_action = self.choose_action(curr_node)
                 else:
-                    curr_node = self.extension(curr_node, p.data().cpu().numpy()[0])
+                    curr_node = self.extension(curr_node, p.data.cpu().numpy()[0])
 
                     # randomly choose an action
                     curr_action = random.choice(curr_node.actions)
@@ -125,7 +127,7 @@ class MCTS:
                 if str(curr_board) != str(curr_node.board):
                     print('warning (MCTS): board information does not match')
 
-                if curr_node.end_flag:
+                if curr_node.is_leaf:
                     break
 
             self.backup_edges(curr_node, v.item())
