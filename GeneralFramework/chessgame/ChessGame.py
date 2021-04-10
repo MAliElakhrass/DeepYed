@@ -3,7 +3,6 @@ from GeneralFramework.chessgame.ChessLogic import Board
 import chess
 import numpy as np
 
-
 # CONSTANTS
 NUMBER_SQUARES = 8
 
@@ -35,7 +34,7 @@ class ChessGame(Game):
         Returns:
             actionSize: number of all possible actions
         """
-        return (self.n**2)*(self.n**2)
+        return (self.n ** 2) * (self.n ** 2)
 
     def get_uci_move(self, x1, y1, x2, y2):
         row1 = self.dict_number_letter[x1 + 1]
@@ -58,13 +57,13 @@ class ChessGame(Game):
         """
         # For debug purpose
         print('ChessGame==>getNextState, param action number: ', action)
-        
+
         # If no possible action
         if action == NUMBER_SQUARES * NUMBER_SQUARES:
             return board, -player
 
         new_board = Board(self.n)
-        new_board.board = board.copy() # Copy the chessboard
+        new_board.board = board.copy()  # Copy the chessboard
         temp1 = int(action / (NUMBER_SQUARES * NUMBER_SQUARES))
         temp2 = action % (NUMBER_SQUARES * NUMBER_SQUARES)
         x1 = int(temp1 / NUMBER_SQUARES)
@@ -135,7 +134,7 @@ class ChessGame(Game):
                 print("GAME LOST!")
                 return -1
 
-    def getCanonicalForm(self, board, player):
+    def getCanonicalForm(self, board: chess.Board, player):
         """
         Input:
             board: current board
@@ -149,7 +148,10 @@ class ChessGame(Game):
                             board as is. When the player is black, we can invert
                             the colors and return the board.
         """
-        pass
+        if player:
+            return board
+        else:
+            return board.mirror()
 
     def getSymmetries(self, board, pi):
         """
@@ -162,7 +164,8 @@ class ChessGame(Game):
                        form of the board and the corresponding pi vector. This
                        is used when training the neural network from examples.
         """
-        pass
+        pi_board = np.reshape(pi, (self.n ** 2, self.n ** 2))
+        return [(board, list(pi_board.ravel()) + [pi[-1]])]
 
     def stringRepresentation(self, board):
         """
@@ -173,7 +176,8 @@ class ChessGame(Game):
             boardString: a quick conversion of board to a string format.
                          Required by MCTS for hashing.
         """
-        pass
-
+        tmp = Board(self.n)
+        tmp.board = board
+        return str(tmp.get_bitboard())
 
 # https://github.com/saurabhk7/chess-alpha-zero
