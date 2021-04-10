@@ -80,7 +80,7 @@ class Game():
 
         Returns:
             canonicalBoard: returns canonical form of board. The canonical form
-                            should be independent of player. For e.g. in chess,
+                            should be independent of player. For e.g. in chessgame,
                             the canonical form can be chosen to be from the pov
                             of white. When the player is white, we can return
                             board as is. When the player is black, we can invert
