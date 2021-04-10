@@ -1,7 +1,12 @@
 from GeneralFramework.NeuralNet import NeuralNet
 from GeneralFramework.chessgame.ChessNNet import ChessNNet as cnnet
+import chess
 import numpy as np
 import os
+
+
+# CONSTANTS
+NUMBER_SQUARES = 8
 
 
 class NNetWrapper(NeuralNet):
@@ -47,6 +52,7 @@ class NNetWrapper(NeuralNet):
             v: a float in [-1,1] that gives the value of the current board
         """
         # preparing input
+        board = self.get_bitboard(board)
         board = board[np.newaxis, :, :]
 
         # run
@@ -54,6 +60,20 @@ class NNetWrapper(NeuralNet):
 
         # print('PREDICTION TIME TAKEN : {0:03f}'.format(time.time()-start))
         return pi[0], v[0]
+
+    @staticmethod
+    def get_bitboard(board: chess.Board):
+        x = np.zeros(NUMBER_SQUARES * NUMBER_SQUARES, dtype=np.int8)
+
+        for square in range(NUMBER_SQUARES * NUMBER_SQUARES):
+            piece: chess.Piece = board.piece_at(square)
+            if piece:
+                color = piece.color
+                col = int(square % 8)
+                row = int(square / 8)
+                x[row * 8 + col] = -piece.piece_type if color == chess.BLACK else piece.piece_type
+
+        return np.reshape(x, (8, 8))
 
     def save_checkpoint(self, folder='checkpoint', filename='checkpoint.pth.tar'):
         filepath = os.path.join(folder, filename)

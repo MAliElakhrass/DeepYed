@@ -55,9 +55,6 @@ class ChessGame(Game):
             nextBoard: board after applying action
             nextPlayer: player who plays in the next turn (should be -player)
         """
-        # For debug purpose
-        print('ChessGame==>getNextState, param action number: ', action)
-
         # If no possible action
         if action == NUMBER_SQUARES * NUMBER_SQUARES:
             return board, -player
@@ -70,12 +67,8 @@ class ChessGame(Game):
         y1 = temp1 % NUMBER_SQUARES
         x2 = int(temp2 / NUMBER_SQUARES)
         y2 = temp2 % NUMBER_SQUARES
-        print("selected action: ", x1, y1, x2, y2)
 
         move = self.get_uci_move(x1, y1, x2, y2)
-
-        print("MOVE: ", move)
-
         new_board.make_move(move)
 
         return new_board.board, -player
@@ -133,6 +126,8 @@ class ChessGame(Game):
             else:
                 print("GAME LOST!")
                 return -1
+
+        return 0
 
     def getCanonicalForm(self, board: chess.Board, player):
         """
