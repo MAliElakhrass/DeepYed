@@ -1,5 +1,6 @@
 from GeneralFramework.Game import Game
 from GeneralFramework.chessgame.ChessLogic import Board
+import chess
 import numpy as np
 
 
@@ -110,7 +111,7 @@ class ChessGame(Game):
 
         return np.array(valid_moves)
 
-    def getGameEnded(self, board, player):
+    def getGameEnded(self, board: chess.Board, player):
         """
         Input:
             board: current board
@@ -121,7 +122,18 @@ class ChessGame(Game):
                small non-zero value for draw.
 
         """
-        pass
+        new_board = board.copy()
+
+        if new_board.is_game_over(claim_draw=True):
+            if new_board.result() == "1-0":
+                print("GAME WON!")
+                return 1
+            elif new_board.result() == "1/2-1/2":
+                print("DRAW")
+                return -0.5
+            else:
+                print("GAME LOST!")
+                return -1
 
     def getCanonicalForm(self, board, player):
         """

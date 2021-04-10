@@ -56,4 +56,3 @@ if __name__ == '__main__':
     b = Board()
     print(b.pieces)
     print(b.get_valid_moves())
-    print(b.get_legal_moves())
