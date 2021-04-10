@@ -1,5 +1,6 @@
 from GeneralFramework.Game import Game
 from GeneralFramework.chessgame.ChessLogic import Board
+import numpy as np
 
 
 # CONSTANTS
@@ -90,7 +91,24 @@ class ChessGame(Game):
                         moves that are valid from the current board and player,
                         0 for invalid moves
         """
-        pass
+        valid_moves = [0] * self.getActionSize()
+        b = Board(self.n)
+        b.board = board.copy()
+        legal_moves = b.get_valid_moves()
+
+        if len(legal_moves) == 0:
+            valid_moves[-1] = 1
+            return np.array(valid_moves)
+
+        for move in legal_moves:
+            x1 = move[0]
+            y1 = move[1]
+            x2 = move[2]
+            y2 = move[3]
+
+            valid_moves[(self.n * self.n) * (self.n * x1 + y1) + (self.n * x2 + y2)] = 1
+
+        return np.array(valid_moves)
 
     def getGameEnded(self, board, player):
         """
