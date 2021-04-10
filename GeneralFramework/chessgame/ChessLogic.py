@@ -51,6 +51,13 @@ class Board:
 
         return legal_moves
 
+    def count_diff(self, color):
+        """Counts the # pieces of the given color
+        (1 for white, -1 for black, 0 for empty spaces)"""
+        whites = np.count_nonzero(self.pieces < 0)
+        blacks = np.count_nonzero(self.pieces > 1)
+        return whites - blacks
+
 
 if __name__ == '__main__':
     b = Board()

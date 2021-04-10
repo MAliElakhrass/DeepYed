@@ -178,6 +178,11 @@ class ChessGame(Game):
         """
         tmp = Board(self.n)
         tmp.board = board
-        return str(tmp.get_bitboard())
+        return str(tmp.get_bitboard(tmp.board))
+
+    def get_score(self, board, player):
+        b = Board(self.n)
+        b.pieces = np.copy(board)
+        return b.count_diff(player)
 
 # https://github.com/saurabhk7/chess-alpha-zero
