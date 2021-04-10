@@ -10,7 +10,7 @@ from utils import *
 from NeuralNet import NeuralNet
 
 import tensorflow as tf
-from .Connect4NNet import Connect4NNet as onnet
+from .OthelloNNet import OthelloNNet as onnet
 
 args = dotdict({
     'lr': 0.001,
@@ -20,8 +20,6 @@ args = dotdict({
     'num_channels': 512,
 })
 
-
-## Code based on othello.NNetWrapper with minimal changes.
 
 class NNetWrapper(NeuralNet):
     def __init__(self, game):
