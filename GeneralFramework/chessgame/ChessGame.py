@@ -59,8 +59,8 @@ class ChessGame(Game):
         if action == NUMBER_SQUARES * NUMBER_SQUARES - 1:
             return board, -player
 
-        new_board = Board()
-        new_board.board = board.copy()  # Copy the chessboard
+        new_board = Board(board.copy())
+        # new_board.board = board.copy()  # Copy the chessboard
         temp1 = int(action / (NUMBER_SQUARES * NUMBER_SQUARES))
         temp2 = action % (NUMBER_SQUARES * NUMBER_SQUARES)
         x1 = int(temp1 / NUMBER_SQUARES)
@@ -85,8 +85,8 @@ class ChessGame(Game):
                         0 for invalid moves
         """
         valid_moves = [0] * self.getActionSize()
-        b = Board()
-        b.board = board.copy()
+        b = Board(board.copy())
+        # b.board = board.copy()
         legal_moves = b.get_valid_moves()
 
         if len(legal_moves) == 0:
@@ -174,8 +174,7 @@ class ChessGame(Game):
         return str(Board.get_bitboard(board))
 
     def get_score(self, board, player):
-        b = Board()
-        b.pieces = np.copy(board)
+        b = Board(board.copy())
         return b.count_diff(player)
 
 # https://github.com/saurabhk7/chess-alpha-zero
