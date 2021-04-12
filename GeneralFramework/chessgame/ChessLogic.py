@@ -10,8 +10,8 @@ class Board:
     Chess Board based on python-chess library
     """
 
-    def __init__(self, n=None):
-        self.n = n or NUMBER_SQUARES
+    def __init__(self):
+        self.n = NUMBER_SQUARES
         self.board = chess.Board()
         self.pieces = self.get_bitboard(self.board)
 
