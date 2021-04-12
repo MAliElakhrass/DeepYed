@@ -56,7 +56,7 @@ class ChessGame(Game):
             nextPlayer: player who plays in the next turn (should be -player)
         """
         # If no possible action
-        if action == NUMBER_SQUARES * NUMBER_SQUARES:
+        if action == NUMBER_SQUARES * NUMBER_SQUARES - 1:
             return board, -player
 
         new_board = Board(self.n)

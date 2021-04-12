@@ -41,6 +41,7 @@ class Board:
                 move.promotion = chess.QUEEN # Comment je fais pour savoir si Queen ou cavalier?
 
         self.board.push(chess.Move.from_uci(str(move)))
+        self.pieces = self.get_bitboard(self.board)
 
     def get_valid_moves(self):
         legal_moves = list(self.board.legal_moves)
