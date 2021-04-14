@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from tensorflow.keras import Input
@@ -8,6 +10,7 @@ from tensorflow.keras.optimizers import Adam
 
 class NeuralNetwork:
     def __init__(self):
+        super(NeuralNetwork, self).__init__()
         self.board_x = 8
         self.board_y = 8
 
@@ -39,7 +42,7 @@ class NeuralNetwork:
         # OUTPUT LAYER JSP
         s_fc1 = Dropout(self.dropout)(
             Activation('relu')(BatchNormalization()(Dense(1024, use_bias=False)(x_flat))))
-        s_fc2 =Dropout(self.dropout)(
+        s_fc2 = Dropout(self.dropout)(
             Activation('relu')(BatchNormalization()(Dense(512, use_bias=False)(s_fc1))))
 
         pi = Dense(self.action_size, activation='softmax', name='pi')(s_fc2)
