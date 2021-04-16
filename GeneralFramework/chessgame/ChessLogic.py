@@ -20,16 +20,21 @@ class Board:
 
     @staticmethod
     def get_bitboard(board: chess.Board):
-        x = np.zeros(NUMBER_SQUARES * NUMBER_SQUARES, dtype=np.int8)
-
-        for square in range(NUMBER_SQUARES * NUMBER_SQUARES):
-            piece: chess.Piece = board.piece_at(square)
+        x = np.zeros(64, dtype=np.int8)
+        # print('Flipping: ', flip)
+        for pos in range(64):
+            piece = board.piece_type_at(pos)  # Gets the piece type at the given square. 0==>blank,1,2,3,4,5,6
             if piece:
-                color = piece.color
-                col = int(square % 8)
-                row = int(square / 8)
-                x[row * 8 + col] = -piece.piece_type if color == chess.BLACK else piece.piece_type
-
+                color = int(
+                    bool(board.occupied_co[chess.BLACK] & chess.BB_SQUARES[pos]))  # to check if piece is black or white
+                col = int(pos % 8)
+                row = int(pos / 8)
+                x[row * 8 + col] = -piece if color else piece
+        t = board.turn
+        c = board.castling_rights
+        e = board.ep_square
+        h = board.halfmove_clock
+        f = board.fullmove_number
         return np.reshape(x, (8, 8))
 
     def make_move(self, move_uci: str):

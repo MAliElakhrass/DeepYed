@@ -151,3 +151,5 @@ NeuralNetKeras/books/
 GeneralFramework/pretrained_models/
 
 ReinforcementLearning/model_data/
+
+GeneralFramework/temp/

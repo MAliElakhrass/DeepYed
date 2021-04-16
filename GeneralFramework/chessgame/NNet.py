@@ -6,6 +6,8 @@ import os
 
 
 # CONSTANTS
+from ReinforcementLearning.Board import Board
+
 NUMBER_SQUARES = 8
 
 
@@ -35,8 +37,12 @@ class NNetWrapper(NeuralNet):
                       board in its canonical form.
         """
         input_boards, target_pis, target_vs = list(zip(*examples))
+
+        input_boards = [Board.get_bitboard(board) for board in input_boards]
+
         input_boards = np.asarray(input_boards)
         target_pis = np.asarray(target_pis)
+        target_pis = np.delete(target_pis, 4096, axis=1)
         target_vs = np.asarray(target_vs)
         self.nnet.model.fit(x=input_boards, y=[target_pis, target_vs], batch_size=self.args['batch_size'],
                             epochs=self.args['epochs'])
@@ -63,16 +69,26 @@ class NNetWrapper(NeuralNet):
 
     @staticmethod
     def get_bitboard(board: chess.Board):
-        x = np.zeros(NUMBER_SQUARES * NUMBER_SQUARES, dtype=np.int8)
-
-        for square in range(NUMBER_SQUARES * NUMBER_SQUARES):
-            piece: chess.Piece = board.piece_at(square)
+        """
+            Convert a board to numpy array of size 8x8
+            :param board:
+            :return: numpy array 8*8
+        """
+        x = np.zeros(64, dtype=np.int8)
+        # print('Flipping: ', flip)
+        for pos in range(64):
+            piece = board.piece_type_at(pos)  # Gets the piece type at the given square. 0==>blank,1,2,3,4,5,6
             if piece:
-                color = piece.color
-                col = int(square % 8)
-                row = int(square / 8)
-                x[row * 8 + col] = -piece.piece_type if color == chess.BLACK else piece.piece_type
-
+                color = int(
+                    bool(board.occupied_co[chess.BLACK] & chess.BB_SQUARES[pos]))  # to check if piece is black or white
+                col = int(pos % 8)
+                row = int(pos / 8)
+                x[row * 8 + col] = -piece if color else piece
+        t = board.turn
+        c = board.castling_rights
+        e = board.ep_square
+        h = board.halfmove_clock
+        f = board.fullmove_number
         return np.reshape(x, (8, 8))
 
     def save_checkpoint(self, folder='checkpoint', filename='checkpoint.pth.tar'):
@@ -88,5 +104,5 @@ class NNetWrapper(NeuralNet):
         # https://github.com/pytorch/examples/blob/master/imagenet/main.py#L98
         filepath = os.path.join(folder, filename)
         if not os.path.exists(filepath):
-            raise ("No model in path {}".format(filepath))
+            print("No model in path {}".format(filepath))
         self.nnet.model.load_weights(filepath)
