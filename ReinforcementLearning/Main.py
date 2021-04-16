@@ -8,7 +8,7 @@ if __name__ == '__main__':
         model_path = f'model_{i}.h5'
         current_model = os.path.join('./model_data/', model_path)
 
-        dg = DataGenerator(current_model, 8)
+        dg = DataGenerator(current_model, 2)
 
         dg.generate_data()
 
