@@ -118,13 +118,10 @@ class ChessGame(Game):
 
         if new_board.is_game_over(claim_draw=True):
             if new_board.result() == "1-0":
-                print("GAME WON!")
                 return 1
             elif new_board.result() == "1/2-1/2":
-                print("DRAW")
                 return -0.5
             else:
-                print("GAME LOST!")
                 return -1
 
         return 0
