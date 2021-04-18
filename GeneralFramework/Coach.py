@@ -86,7 +86,12 @@ class Coach():
 
                 for _ in tqdm(range(self.args.numEps), desc="Self Play"):
                     self.mcts = MCTS(self.game, self.nnet, self.args)  # reset search tree
-                    iterationTrainExamples += self.executeEpisode()
+                    try:
+                        iterationTrainExamples += self.executeEpisode()
+                    except:
+                        print('MAX RECURSION BUG!')
+                        self.args.numIters += 1
+                        continue
 
                 # save the iteration examples to the history 
                 self.trainExamplesHistory.append(iterationTrainExamples)
