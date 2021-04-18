@@ -55,3 +55,18 @@ class ChessNNet:
 
         train_step = tf.keras.optimizers.Adam(self.args['lr']).minimize(total_loss)
     """
+
+
+if __name__ == '__main__':
+    from GeneralFramework.chessgame.ChessGame import ChessGame
+    g = ChessGame(8)
+    args = {
+        'lr': 0.001,
+        'dropout': 0.3,
+        'epochs': 10,
+        'batch_size': 64,
+        'num_channels': 512,
+    }
+    nn = ChessNNet(g, args)
+
+    nn.model.save_weights('./best.h5')
