@@ -1,4 +1,5 @@
 from GeneralFramework.NeuralNet import NeuralNet
+from GeneralFramework.chessgame import ChessLogic
 from GeneralFramework.chessgame.ChessNNet import ChessNNet as cnnet
 import chess
 import numpy as np
@@ -6,8 +7,6 @@ import os
 
 
 # CONSTANTS
-from ReinforcementLearning.Board import Board
-
 NUMBER_SQUARES = 8
 
 
@@ -38,14 +37,13 @@ class NNetWrapper(NeuralNet):
         """
         input_boards, target_pis, target_vs = list(zip(*examples))
 
-        input_boards = [Board.get_bitboard(board) for board in input_boards]
+        input_boards = [self.get_bitboard(board) for board in input_boards]
 
         input_boards = np.asarray(input_boards)
         target_pis = np.asarray(target_pis)
         target_pis = np.delete(target_pis, 4096, axis=1)
         target_vs = np.asarray(target_vs)
-        self.nnet.model.fit(x=input_boards, y=[target_pis, target_vs], batch_size=self.args['batch_size'],
-                            epochs=self.args['epochs'])
+        self.nnet.model.fit(x=input_boards, y=[target_pis, target_vs], batch_size=self.args['batch_size'], epochs=self.args['epochs'])
 
     def predict(self, board):
         """

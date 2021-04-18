@@ -13,7 +13,6 @@ class Board:
     def __init__(self, board: chess.Board = None):
         self.n = NUMBER_SQUARES
         self.board = board or chess.Board()
-        # self.pieces = self.get_bitboard(self.board)
 
         self.letters = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8}
         self.numbers = {'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8}
