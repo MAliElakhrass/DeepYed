@@ -62,6 +62,7 @@
     </li>
     <li><a href="#heuristic-approach">Heuristic Approach</a></li>
     <li><a href="#neural-network">Neural Network</a></li>
+    <li><a href="#reinforcement-learning">Heuristic Approach</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
@@ -161,13 +162,14 @@ The results were not as expected. We first tried to implement a similar architec
 of 773-600-400-200. The decoder had the following architecture 200-400-600-773 to rebuild the input. All the activation functions used between each layer is a ReLU function and the last activation function is 
 a Sigmoid function. The siamese network used had four linear layers with the following dimensions 200-400-200-100. For this part, ReLU was used as activation function and sigmoid for the last layer. The results were very bad
 with an accuracy of 50%. Then we tried adding some batch normalisation between each layers and changed the activation function to Leaky ReLU and obtained an accuracy of 58% which was better but still very bad. We tried several other
-architecture changing the learning rates, the number of features per layer, the error used but the score was still very bad. We started changing many parts of our machine learning pipeline the preprocessing part, the feature extraction, 
-the model architecture and the training. After a lot of experimentation, we finally had a model with great results. It used DenseTied layers BLA BLA
+architecture changing the learning rates, the number of features per layer, the error used but the score was still very bad.
 
 _For more details about DeepChess, please refer to the [Paper](https://arxiv.org/pdf/1711.09667.pdf)_
 
 _For more details about the CCRL 40/15 Dataset, please refer to this [Website](https://ccrl.chessdom.com/ccrl/4040/)_
 
+<!-- USAGE EXAMPLES -->
+## Reinforcement learning
 
 <!-- ROADMAP -->
 ## Roadmap
