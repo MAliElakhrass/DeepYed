@@ -128,7 +128,7 @@ class AutoEncoder:
         plt.ylabel('Accuracy')
         plt.xlabel('Epoch')
         plt.legend(['Train', 'Val'], loc='upper left')
-        plt.savefig('NeuralNetKeras/figures/accuracy.png')
+        plt.savefig('NeuralNetKeras/figures/accuracy_ae.png')
         plt.show()
 
         plt.plot(history.history['loss'])
@@ -137,7 +137,7 @@ class AutoEncoder:
         plt.ylabel('Loss')
         plt.xlabel('Epoch')
         plt.legend(['Train', 'Val'], loc='upper left')
-        plt.savefig('NeuralNetKeras/figures/loss.png')
+        plt.savefig('NeuralNetKeras/figures/loss_ae.png')
         plt.show()
 
     def save(self):
