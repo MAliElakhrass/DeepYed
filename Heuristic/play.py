@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication
-from Projet.DeepYed.MainWindow import MainWindow
+from Heuristic.MainWindow import MainWindow
 from stockfish import Stockfish
 import chess
 import chess.svg
@@ -9,7 +9,7 @@ import chess.engine
 import datetime
 
 # Piece Square Tables
-# Value from https://www.chessprogramming.org/Simplified_Evaluation_Function
+# Value from https://github.com/thomasahle/sunfish
 pawntable = [
     0, 0, 0, 0, 0, 0, 0, 0,
     -31,   8,  -7, -37, -36, -14,   3, -31,
@@ -71,69 +71,70 @@ kingstable = [
     4,  54,  47, -99, -99,  60,  83, -62]
 
 
-class PlayChess():
+class PlayChess:
     def __init__(self):
         self.history = []
         self.board = chess.Board()
 
-    def start_game(self):
-        while True:
-            # AI
-            move = self.select_move(depth=3)
-            self.board.push(move)
-            self.show_board()
-            try:
-                user_move = None
-                while user_move not in self.board.legal_moves:
-                    user_input = input("Entre un move")
-                    user_move = chess.Move.from_uci(user_input)
-                self.board.push(user_move)
-            except:
-                user_input = input("Entre un move")
-                user_move = chess.Move.from_uci(user_input)
-                self.board.push(user_move)
+    def play_engine(self, level=1, number_games=10):
+        """
+        This function will evaluate our agent against Stockfish
 
-    def play_engine(self):
-        stockfish = Stockfish('./../engines/stockfish-12/stockfish.exe',
-                              parameters={"Threads": 4, "Skill Level": 1})
+        :param number_games: The number of games to be played against Stockfish
+        :param level: Level of Stockfish
+        :return:
+        """
+        stockfish = Stockfish('engines/stockfish-12/stockfish.exe', parameters={"Threads": 4, "Skill Level": level})
 
-        game = chess.pgn.Game()
-        game.headers["Event"] = "Test"
-        game.headers["Site"] = "Hammad's PC"
-        game.headers["Date"] = str(datetime.datetime.now().date())
-        game.headers["Round"] = '3'
-        game.headers["White"] = "DeepYed"
-        game.headers["Black"] = 'Stockfish'
+        for i in range(number_games):
+            game = chess.pgn.Game()
+            game.headers["Event"] = "Evalutation DeepYed vs Stockfish"
+            game.headers["Site"] = "My PC"
+            game.headers["Date"] = str(datetime.datetime.now().date())
+            game.headers["Round"] = i
+            game.headers["White"] = "DeepYed"
+            game.headers["Black"] = 'Stockfish'
 
-        while not self.board.is_game_over():
-            if self.board.turn:
-                print("DeepYed's Turn")
-                move = self.select_move(depth=3)
-                self.history.append(move)
-                self.board.push(move)
-                print(move)
-            else:
-                print("Stockfish's Turn")
-                move = chess.Move.from_uci(self.play_stockfish(stockfish))
-                self.history.append(move)
-                self.board.push(move)
-                print(move)
+            while not self.board.is_game_over():
+                if self.board.turn:
+                    print("DeepYed's Turn")
+                    move = self.select_move(depth=3)
+                    self.history.append(move)
+                    self.board.push(move)
+                    print(move)
+                else:
+                    print("Stockfish's Turn")
+                    move = chess.Move.from_uci(self.play_stockfish(stockfish))
+                    self.history.append(move)
+                    self.board.push(move)
+                    print(move)
 
-        game.add_line(self.history)
-        game.headers["Result"] = str(self.board.result())
+            game.add_line(self.history)
+            game.headers["Result"] = str(self.board.result())
 
-        print(game)
-        print(game, file=open("round_3.pgn", "w"), end="\n\n")
+            print(game)
+            print(game, file=open(f"round_{i}.pgn", "w"), end="\n\n")
 
         self.show_board()
 
     def play_stockfish(self, stockfish):
+        """
+        This function will return the best move chosen by the stockfish engine in 1 second
+
+        :param stockfish: The stockfish engine
+        :return: The uci move
+        """
         fen = self.board.fen()
         stockfish.set_fen_position(fen)
 
-        return stockfish.get_best_move_time(100)
+        return stockfish.get_best_move_time(1000)
 
     def evaluate_board(self):
+        """
+        Heuristic. The heuristic is calculated by adding the material pieces and the positions of each piece
+
+        :return: the heuristic value
+        """
         if self.board.is_checkmate():
             if self.board.turn:
                 return -9999
@@ -178,7 +179,8 @@ class PlayChess():
 
     def quiesce(self, alpha, beta):
         """
-        https://www.chessprogramming.org/Quiescence_Search
+        This function will perform a quiescence search.
+
         :param alpha:
         :param beta:
         :return:
@@ -205,7 +207,8 @@ class PlayChess():
 
     def alphabeta(self, alpha, beta, depth):
         """
-        https://www.chessprogramming.org/Alpha-Beta
+        Negamax search algorithm
+
         :param alpha:
         :param beta:
         :param depth:
@@ -227,9 +230,15 @@ class PlayChess():
         return alpha
 
     def select_move(self, depth):
+        """
+        Select a move for the agent. At first, try to obtain a move from the opening book
+
+        :param depth:
+        :return:
+        """
         try:
-            move = chess.polyglot.MemoryMappedReader('./../books/Perfect2017-SF12.bin').weighted_choice(board=self.board).move
-            return move
+            return chess.polyglot.MemoryMappedReader('books/Perfect2017-SF12.bin')\
+                .weighted_choice(board=self.board).move
         except:
             best_move = chess.Move.null()
             best_value = -99999
@@ -255,6 +264,11 @@ class PlayChess():
             return best_move
 
     def show_board(self):
+        """
+        Visual representation of the chess board
+
+        :return:
+        """
         app = QApplication([])
         window = MainWindow(self.board)
         window.show()

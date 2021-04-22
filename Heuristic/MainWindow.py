@@ -1,7 +1,8 @@
 from PyQt5.QtSvg import QSvgWidget
-from PyQt5.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import QWidget
 import chess
 import chess.svg
+
 
 class MainWindow(QWidget):
     def __init__(self, board):
