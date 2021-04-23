@@ -47,7 +47,6 @@ class Board:
         try:
             self.board.push(chess.Move.from_uci(str(move)))
         except:
-            yed = move
             print("FAKE MOVE")
         # self.pieces = self.get_bitboard(self.board)
 

@@ -43,15 +43,13 @@ class StockfishPlayer:
 
     def play(self, board):
         fen = board.fen()
-        print(fen)
         self.engine.set_fen_position(fen)
 
         move = self.engine.get_best_move_time(100)
 
-        x1 = self.letters[move[0]]
-        x2 = self.letters[move[2]]
-        y1 = int(move[1])
-        y2 = int(move[3])
+        x1 = self.letters[move[0]] - 1
+        x2 = self.letters[move[2]] - 1
+        y1 = int(move[1]) - 1
+        y2 = int(move[3]) - 1
 
-        print((8 * 8) * (8 * x1 + y1) + (8 * x2 + y2)) + 1
         return (8 * 8) * (8 * x1 + y1) + (8 * x2 + y2)

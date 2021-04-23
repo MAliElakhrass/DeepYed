@@ -56,11 +56,11 @@ class ChessGame(Game):
             nextPlayer: player who plays in the next turn (should be -player)
         """
         # If no possible action
-        if action == NUMBER_SQUARES * NUMBER_SQUARES - 1:
+        if action == NUMBER_SQUARES * NUMBER_SQUARES:
             return board, -player
 
         new_board = Board(board.copy())
-        # new_board.board = board.copy()  # Copy the chessboard
+
         temp1 = int(action / (NUMBER_SQUARES * NUMBER_SQUARES))
         temp2 = action % (NUMBER_SQUARES * NUMBER_SQUARES)
         x1 = int(temp1 / NUMBER_SQUARES)
@@ -86,7 +86,6 @@ class ChessGame(Game):
         """
         valid_moves = [0] * self.getActionSize()
         b = Board(board.copy())
-        # b.board = board.copy()
         legal_moves = b.get_valid_moves()
 
         if len(legal_moves) == 0:
