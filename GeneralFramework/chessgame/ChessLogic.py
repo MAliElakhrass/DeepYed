@@ -29,11 +29,7 @@ class Board:
                 col = int(pos % 8)
                 row = int(pos / 8)
                 x[row * 8 + col] = -piece if color else piece
-        t = board.turn
-        c = board.castling_rights
-        e = board.ep_square
-        h = board.halfmove_clock
-        f = board.fullmove_number
+
         return np.reshape(x, (8, 8))
 
     def make_move(self, move_uci: str):

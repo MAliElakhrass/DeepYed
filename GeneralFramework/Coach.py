@@ -89,9 +89,10 @@ class Coach():
                     try:
                         iterationTrainExamples += self.executeEpisode()
                     except:
-                        print('MAX RECURSION BUG!')
                         self.args.numIters += 1
                         continue
+
+                # print(iterationTrainExamples[0])
 
                 # save the iteration examples to the history 
                 self.trainExamplesHistory.append(iterationTrainExamples)
