@@ -15,6 +15,12 @@ class DataGenerator:
         self.data_path = data_path
 
     def get_valid_moves(self):
+        """
+        This function will read the moves made from the game.
+        It will only save the move if it's not a capture move or if it's played after the 5th move
+
+        :return:
+        """
         valid_moves = []
         for i, move in enumerate(self.game.mainline_moves()):
             if not self.game.board().is_capture(move) and i >= 5:
@@ -54,6 +60,7 @@ class DataGenerator:
     def add_move(self, index, white):
         """
         This function will add 10 random moves for a game
+
         :param white:
         :param index:
         :return: new index
@@ -83,6 +90,7 @@ class DataGenerator:
     def iterate_over_data(self):
         """
         This function iterates over the pgn file and extracts 10 random moves of each game
+
         :return:
         """
         data_file = open(self.data_path)
@@ -106,6 +114,11 @@ class DataGenerator:
             count += 1
 
     def save(self):
+        """
+        This function will save the data into two files
+
+        :return:
+        """
         np.save('./data/white.npy', self.white_moves)
         np.save('./data/black.npy', self.black_moves)
 
