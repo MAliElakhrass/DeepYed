@@ -78,11 +78,16 @@ class Arena():
         twoWon = 0
         draws = 0
         for _ in tqdm(range(num), desc="Arena.playGames (1)"):
+            gameResult = self.playGame(verbose=verbose)
+            """
             try:
                 gameResult = self.playGame(verbose=verbose)
             except:
+                print("Game bug Error")
+                twoWon += 1
                 num += 1
                 continue
+            """
             if gameResult == 1:
                 oneWon += 1
             elif gameResult == -1:
@@ -93,11 +98,16 @@ class Arena():
         self.player1, self.player2 = self.player2, self.player1
 
         for _ in tqdm(range(num), desc="Arena.playGames (2)"):
+            gameResult = self.playGame(verbose=verbose)
+            """
             try:
                 gameResult = self.playGame(verbose=verbose)
             except:
+                print("Game bug Error")
+                twoWon += 1
                 num += 1
                 continue
+            """
             if gameResult == -1:
                 oneWon += 1
             elif gameResult == 1:

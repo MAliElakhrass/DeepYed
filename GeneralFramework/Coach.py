@@ -117,7 +117,7 @@ class Coach():
 
             self.nnet.train(trainExamples)
             nmcts = MCTS(self.game, self.nnet, self.args)
-
+  
             log.info('PITTING AGAINST PREVIOUS VERSION')
             arena = Arena(lambda x: np.argmax(pmcts.getActionProb(x, temp=0)),
                           lambda x: np.argmax(nmcts.getActionProb(x, temp=0)), self.game)

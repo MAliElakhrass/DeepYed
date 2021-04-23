@@ -135,8 +135,6 @@ dmypy.json
 engines/
 books/
 
-NeuralNetwork/data/
-
 # Neural Net Keras
 NeuralNetKeras/data/
 
@@ -144,12 +142,6 @@ NeuralNetKeras/model/
 
 NeuralNetKeras/weights/
 
-NeuralNetKeras/engines/
-
-NeuralNetKeras/books/
-
-GeneralFramework/pretrained_models/
-
 ReinforcementLearning/model_data/
 
-GeneralFramework/temp/
+GeneralFramework/training/
