@@ -3,6 +3,9 @@ import numpy as np
 
 
 class DeepYedDataGenerator(Sequence):
+    """
+    This class will be used for real-time data feeding to our Keras model
+    """
     def __init__(self, batch_size, whites, blacks, train=1):
         self.batch_size = batch_size
         self.train = train
@@ -14,15 +17,26 @@ class DeepYedDataGenerator(Sequence):
             self.data_size = 300000
 
     def __len__(self):
+        """
+        Function that returns the number of batches per epoch
+
+        :return:
+        """
         return int(np.floor(self.data_size / self.batch_size))
 
     def __getitem__(self, index):
+        """
+        Generate one batch of data
+
+        :param index:
+        :return:
+        """
         start_index = index * self.batch_size
 
         try:
             X_white_batch = self.whites[start_index: start_index + self.batch_size]
             X_black_batch = self.blacks[start_index: start_index + self.batch_size]
-        except IndexError:  # End of the array
+        except IndexError:
             X_white_batch = self.whites[start_index:]
             X_black_batch = self.blacks[start_index:]
 
@@ -35,8 +49,6 @@ class DeepYedDataGenerator(Sequence):
         labels = np.stack([Y_white_batch, Y_black_batch], axis=1)
 
         # Randomly switch white and black board
-        # Randomly generate array of 1 and 0 of length batchSize
-        # Switch each index that contains 1
         swap_indices = np.random.randint(2, size=x.shape[0])
         x[swap_indices == 1] = np.flip(x[swap_indices == 1], axis=1)
         labels[swap_indices == 1] = np.flip(labels[swap_indices == 1], axis=1)
@@ -50,5 +62,10 @@ class DeepYedDataGenerator(Sequence):
         return [left_batch, right_batch], labels
 
     def on_epoch_end(self):
+        """
+        Shuffle the data after each epoch
+
+        :return:
+        """
         np.random.shuffle(self.whites)
         np.random.shuffle(self.blacks)
