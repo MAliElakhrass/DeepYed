@@ -6,6 +6,13 @@ import numpy as np
 NUMBER_SQUARES = 8
 
 
+def to_np(board):
+    a = [0] * (8 * 8 * 6)
+    for sq, pc in board.piece_map().items():
+        a[(pc.piece_type - 1) * 64 + sq] = 1 if pc.color else -1
+    return np.array(a)
+
+
 class ChessGame(Game):
     def __init__(self, n):
         super().__init__()
@@ -18,6 +25,9 @@ class ChessGame(Game):
                         that will be the input to your neural network)
         """
         return chess.Board()
+
+    def toArray(self, board):
+        return to_np(board)
 
     def getBoardSize(self):
         """
@@ -84,9 +94,8 @@ class ChessGame(Game):
         assert player == turn
 
         valid_moves = [0] * self.getActionSize()
-        b = board.copy()
-        legal_moves = b.get_valid_moves()
-        for move in legal_moves:
+        b: chess.Board = board.copy()
+        for move in b.legal_moves:
             idx = move.from_square * 64 + move.to_square
             valid_moves[idx] = 1
 
@@ -136,7 +145,7 @@ class ChessGame(Game):
         turn = 1 if board.turn else -1
         assert player == turn
 
-        if player:
+        if board.turn:
             return board
         else:
             return board.mirror()
