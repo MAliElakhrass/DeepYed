@@ -11,7 +11,6 @@ class ChessGame(Game):
     def __init__(self, n):
         super().__init__()
         self.n = n or NUMBER_SQUARES
-        self.dict_number_letter = {1: 'a', 2: 'b', 3: 'c', 4: 'd', 5: 'e', 6: 'f', 7: 'g', 8: 'h'}
 
     def getInitBoard(self):
         """
@@ -19,15 +18,14 @@ class ChessGame(Game):
             startBoard: a representation of the board (ideally this is the form
                         that will be the input to your neural network)
         """
-        b = Board()
-        return b.board
+        return chess.Board()
 
     def getBoardSize(self):
         """
         Returns:
             (x,y): a tuple of board dimensions
         """
-        return self.n, self.n
+        return 6, self.n, self.n
 
     def getActionSize(self):
         """
@@ -36,13 +34,13 @@ class ChessGame(Game):
         """
         return (self.n ** 2) * (self.n ** 2)
 
-    def get_uci_move(self, x1, y1, x2, y2):
-        row1 = self.dict_number_letter[x1 + 1]
-        row2 = self.dict_number_letter[x2 + 1]
-        y1 += 1
-        y2 += 1
+    def get_uci_move(self, action, player):
+        source = action // (self.n * self.n)
+        target = action % (self.n * self.n)
 
-        return row1 + str(y1) + row2 + str(y2)
+        if player == -1:
+            return chess.Move(chess.square_mirror(source), chess.square_mirror(target))
+        return chess.Move(source, target)
 
     def getNextState(self, board, player, action):
         """
@@ -55,23 +53,21 @@ class ChessGame(Game):
             nextBoard: board after applying action
             nextPlayer: player who plays in the next turn (should be -player)
         """
-        # If no possible action
-        if action == NUMBER_SQUARES * NUMBER_SQUARES:
-            return board, -player
+        # Check if right player
+        turn = 1 if board.turn else -1
+        assert player == turn
 
-        new_board = Board(board.copy())
+        uci_move = self.get_uci_move(action, player)
 
-        temp1 = int(action / (NUMBER_SQUARES * NUMBER_SQUARES))
-        temp2 = action % (NUMBER_SQUARES * NUMBER_SQUARES)
-        x1 = int(temp1 / NUMBER_SQUARES)
-        y1 = temp1 % NUMBER_SQUARES
-        x2 = int(temp2 / NUMBER_SQUARES)
-        y2 = temp2 % NUMBER_SQUARES
+        if uci_move not in board.legal_moves:
+            uci_move = chess.Move.from_uci(str(uci_move) + 'q')
+            if uci_move not in board.legal_moves:
+                print('Error! Move is not a legal move!')
 
-        move = self.get_uci_move(x1, y1, x2, y2)
-        new_board.make_move(move)
+        new_board = board.copy()
+        new_board.push(uci_move)
 
-        return new_board.board, -player
+        return new_board, -player
 
     def getValidMoves(self, board, player):
         """
@@ -84,21 +80,16 @@ class ChessGame(Game):
                         moves that are valid from the current board and player,
                         0 for invalid moves
         """
+        # Check if right player
+        turn = 1 if board.turn else -1
+        assert player == turn
+
         valid_moves = [0] * self.getActionSize()
-        b = Board(board.copy())
+        b = board.copy()
         legal_moves = b.get_valid_moves()
-
-        if len(legal_moves) == 0:
-            valid_moves[-1] = 1
-            return np.array(valid_moves)
-
         for move in legal_moves:
-            x1 = move[0]
-            y1 = move[1]
-            x2 = move[2]
-            y2 = move[3]
-
-            valid_moves[(self.n * self.n) * (self.n * x1 + y1) + (self.n * x2 + y2)] = 1
+            idx = move.from_square * 64 + move.to_square
+            valid_moves[idx] = 1
 
         return np.array(valid_moves)
 
@@ -139,6 +130,10 @@ class ChessGame(Game):
                             board as is. When the player is black, we can invert
                             the colors and return the board.
         """
+        # Check if right player
+        turn = 1 if board.turn else -1
+        assert player == turn
+
         if player:
             return board
         else:
@@ -155,8 +150,7 @@ class ChessGame(Game):
                        form of the board and the corresponding pi vector. This
                        is used when training the neural network from examples.
         """
-        pi_board = np.reshape(pi, (self.n ** 2, self.n ** 2))
-        return [(board, list(pi_board.ravel()) + [pi[-1]])]
+        return [(board, pi)]
 
     def stringRepresentation(self, board):
         """
@@ -167,10 +161,9 @@ class ChessGame(Game):
             boardString: a quick conversion of board to a string format.
                          Required by MCTS for hashing.
         """
-        return str(Board.get_bitboard(board))
+        return board.fen()
 
-    def get_score(self, board, player):
-        b = Board(board.copy())
-        return b.count_diff(player)
+    def display(self, board):
+        print(board)
 
 # https://github.com/saurabhk7/chess-alpha-zero
