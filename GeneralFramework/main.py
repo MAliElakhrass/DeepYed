@@ -1,6 +1,6 @@
 from GeneralFramework.Coach import Coach
 from GeneralFramework.chessgame.ChessGame import ChessGame as Game
-from GeneralFramework.chessgame.NNet import NNetWrapper as nn
+from GeneralFramework.chessgame.keras.NNet import NNetWrapper as nn
 from GeneralFramework.utils import *
 import coloredlogs
 import logging

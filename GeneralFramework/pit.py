@@ -2,7 +2,7 @@ from GeneralFramework.Arena import Arena
 from GeneralFramework.MCTS import MCTS
 from GeneralFramework.chessgame.ChessGame import ChessGame
 from GeneralFramework.chessgame.ChessPlayers import *
-from GeneralFramework.chessgame.NNet import NNetWrapper as NNet
+from GeneralFramework.chessgame.keras.NNet import NNetWrapper as NNet
 from GeneralFramework.utils import *
 import numpy as np
 

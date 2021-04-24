@@ -1,6 +1,5 @@
 from GeneralFramework.NeuralNet import NeuralNet
-from GeneralFramework.chessgame import ChessLogic
-from GeneralFramework.chessgame.ChessNNet import ChessNNet as cnnet
+from GeneralFramework.chessgame.keras.ChessNNet import ChessNNet as cnnet
 import chess
 import numpy as np
 import os
