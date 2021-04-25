@@ -1,10 +1,10 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+from GeneralFramework.utils import dotdict
 from tensorflow.keras import Input
-from tensorflow.keras.layers import Activation, BatchNormalization, Conv2D, Dense, Dropout, Flatten, Reshape
+from tensorflow.keras.layers import Activation, Add, BatchNormalization, Conv2D, Dense, Dropout, Flatten, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
-# import tensorflow as tf
 
 
 class ChessNNet:
@@ -18,55 +18,52 @@ class ChessNNet:
 
     def construct_graph(self):
         input_boards = Input(name='input', shape=(self.board_x, self.board_y))
+        x = Reshape([self.board_x, self.board_y, 1])(input_boards)
 
-        x_image = Reshape((self.board_x, self.board_y, 1))(input_boards)
-        h_conv1 = Activation('relu')(BatchNormalization(axis=3)(Conv2D(self.args['num_channels'], 3, padding='same', use_bias=False)(x_image)))
-        h_conv2 = Activation('relu')(BatchNormalization(axis=3)(Conv2D(self.args['num_channels'], 3, padding='same', use_bias=False)(h_conv1)))
-        h_conv3 = Activation('relu')(BatchNormalization(axis=3)(Conv2D(self.args['num_channels'], 3, padding='same', use_bias=False)(h_conv2)))
-        h_conv4 = Activation('relu')(BatchNormalization(axis=3)(Conv2D(self.args['num_channels'], 3, padding='same', use_bias=False)(h_conv3)))
-        h_conv5 = Activation('relu')(BatchNormalization(axis=3)(Conv2D(self.args['num_channels'], 3, padding='same', use_bias=False)(h_conv4)))
-        h_conv5_flat = Flatten()(h_conv5)
+        # Convolutional Block
+        x = Activation('relu')(
+            BatchNormalization()(Conv2D(self.args.num_channels, kernel_size=3, strides=1, padding='same')(x)))
 
-        s_fc1 = Dropout(self.args['dropout'])(Activation('relu')(BatchNormalization(axis=1)(Dense(1024, use_bias=False)(h_conv5_flat))))
-        s_fc2 = Dropout(self.args['dropout'])(Activation('relu')(BatchNormalization(axis=1)(Dense(512, use_bias=False)(s_fc1))))
+        # Res Block
+        for i in range(19):
+            res = x
+            x = Activation('relu')(
+                BatchNormalization()(Conv2D(self.args.num_channels, kernel_size=3, strides=1, padding='same',
+                                            use_bias=False)(x)))
+            x = BatchNormalization()(Conv2D(self.args.num_channels, kernel_size=3, strides=1, padding='same',
+                                            use_bias=False)(x))
+            x = Add()([x, res])
+            x = Activation('relu')(x)
 
-        # pi = tf.keras.layers.Dense(s_fc2, self.action_size)  # batch_size x self.action_size
-        # prob = tf.nn.softmax(pi)
-        # v = tf.nn.tanh(tf.keras.layers.Dense(s_fc2, 1))
-        pi = Dense(self.action_size, activation='softmax', name='pi')(s_fc2)
-        v = Dense(1, activation='tanh', name='v')(s_fc2)
+        # Out Block
+        # Value Head
+        v = Activation('relu')(
+            BatchNormalization()(Conv2D(1, kernel_size=1, strides=1, padding='valid')(x)))
+        v = Flatten()(v)
+        v = Dense(64, activation='relu')(v)
+        v = Dense(1, activation='tanh')(v)
+
+        # Policy Head
+        pi = Activation('relu')(BatchNormalization()(Conv2D(128, kernel_size=1, strides=1, padding='valid')(x)))
+        pi = Flatten()(pi)
+        pi = Dense(self.action_size, activation='softmax')(pi)
 
         model = Model(inputs=input_boards, outputs=[pi, v])
-        model.compile(loss=['categorical_crossentropy', 'mean_squared_error'], optimizer=Adam(self.args['lr']))
+        model.compile(loss=['categorical_crossentropy', 'mean_squared_error'], optimizer=Adam(self.args.lr))
 
         return model
-
-    """
-    def conv2d(self, x, out_channels, padding):
-        return tf.nn.conv2d(x, out_channels, kernel_size=[3, 3], padding=padding)
-
-    def calculate_loss(self):
-        target_pis = tf.keras.Input(name='target_pis', shape=[None, self.action_size], dtype=tf.dtypes.float32)
-        target_vs = tf.keras.Input(name='target_vs', shape=[None], dtype=tf.dtypes.float32)
-
-        loss_pi = tf.nn.softmax_cross_entropy_with_logits(target_pis, self.prob)
-        loss_v = tf.keras.losses.mean_squared_error(target_vs, tf.reshape(self.v, shape=[-1, ]))
-        total_loss = loss_pi + loss_v
-
-        train_step = tf.keras.optimizers.Adam(self.args['lr']).minimize(total_loss)
-    """
 
 
 if __name__ == '__main__':
     from GeneralFramework.chessgame.ChessGame import ChessGame
     g = ChessGame(8)
-    args = {
+    args = dotdict({
         'lr': 0.001,
         'dropout': 0.3,
         'epochs': 10,
-        'batch_size': 64,
-        'num_channels': 512,
-    }
+        'batch_size': 1,
+        'num_channels': 256,
+    })
     nn = ChessNNet(g, args)
 
     nn.model.save_weights('./best.h5')

@@ -6,13 +6,6 @@ import numpy as np
 NUMBER_SQUARES = 8
 
 
-def to_np(board):
-    a = [0] * (8 * 8 * 6)
-    for sq, pc in board.piece_map().items():
-        a[(pc.piece_type - 1) * 64 + sq] = 1 if pc.color else -1
-    return np.array(a)
-
-
 class ChessGame(Game):
     def __init__(self, n):
         super().__init__()
@@ -26,15 +19,23 @@ class ChessGame(Game):
         """
         return chess.Board()
 
-    def toArray(self, board):
-        return to_np(board)
+    @staticmethod
+    def get_bitboard(board: chess.Board):
+        a = [0] * (8 * 8)
+        for square in range(64):
+            piece = board.piece_at(square)
+            if piece:
+                piece_type = piece.piece_type if piece.color else - piece.piece_type  # WHITE C TRUE, BLACK C FALSE
+                a[63-square] = piece_type
+
+        return np.array(a)
 
     def getBoardSize(self):
         """
         Returns:
             (x,y): a tuple of board dimensions
         """
-        return 6, self.n, self.n
+        return self.n, self.n
 
     def getActionSize(self):
         """
@@ -161,7 +162,7 @@ class ChessGame(Game):
                        form of the board and the corresponding pi vector. This
                        is used when training the neural network from examples.
         """
-        return [(board, pi)]
+        return [(self.get_bitboard(board), pi)]
 
     def stringRepresentation(self, board):
         """
@@ -177,4 +178,8 @@ class ChessGame(Game):
     def display(self, board):
         print(board)
 
-# https://github.com/saurabhk7/chess-alpha-zero
+
+if __name__ == '__main__':
+    g = ChessGame(8)
+
+    print(g.get_bitboard(g.getInitBoard()))
