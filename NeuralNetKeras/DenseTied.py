@@ -1,3 +1,6 @@
+"""
+Class taken from: https://gist.github.com/Razz21/c5d3d69e0234b5fbb8069bec3bf554e7
+"""
 from tensorflow.keras import activations, initializers, regularizers, constraints, layers, backend
 
 

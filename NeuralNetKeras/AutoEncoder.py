@@ -1,6 +1,6 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-from NeuralNetKeras.DenseTied import DenseTied
+from DenseTied import DenseTied
 from sklearn.model_selection import train_test_split
 from tensorflow.keras import Input, Model
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
