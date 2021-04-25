@@ -91,55 +91,78 @@ A list of commonly used resources that I find helpful are listed in the acknowle
 ### Built With
 
 This section lists any the major frameworks that we built our project using. 
-* [Pytorch](https://pytorch.org/)
-* [Tensorflow](https://www.tensorflow.org/)
 * [Python](https://www.python.org/)
+* [Tensorflow](https://www.tensorflow.org/)
+* [Keras](https://keras.io/)
 * [CUDA](https://developer.nvidia.com/cuda-toolkit)
-* [python-chess](https://python-chess.readthedocs.io/en/latest)
-
 
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
 To get a local copy up and running follow these simple example steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
+You should run one of the two commands in your terminal in order to install all the requirements for the project.
+* pip
   ```sh
-  npm install npm@latest -g
+  pip install -r requirements.txt
+  ```
+
+* conda
+  ```sh
+  conda install --file requirements. txt
   ```
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+
+1. Clone the repo
    ```sh
-   git clone https://github.com/your_username_/Project-Name.git
+   git clone https://github.com/MAliElakhrass/DeepYed.git
    ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```JS
-   const API_KEY = 'ENTER YOUR API';
-   ```
+2. Download the Stockfish engine from [https://stockfishchess.org/download/](https://stockfishchess.org/download/windows/) and place it under the engines folder
+3. Download the opening books from [https://rebel13.nl/download/books.html](https://rebel13.nl/download/books.html) and uncompress the content of the folder books under the books folder
 
-## Heuristic approach
-We used the Negamax algorithm which is a variant of the minimax search.
+## Open a pgn file
+You can read a pgn file in any text editor. However, if you want to watch the game, you have to download a Graphical User Interface (GUI) for chess. We recommend Scid or Arena.
 
-_For more details on this algorithm, please refer to:  [Website](https://en.wikipedia.org/wiki/Negamax)_
- 
+## Negamax approach
+For this approach there is nothing to train. In order to play this agent against Stockfish, run the following command in the command line
+  ```sh
+   python Heuristic/play.py 1 3 10
+  ```
+The first argument represents the stockfish level, the second represents the depth of our algorithm and the third argument represents the number of games to play.
 
+At the end of each game, a pgn file will be created and you'll be able to watch the game.
 
-<!-- USAGE EXAMPLES -->
 ## Neural Network
-### Dataset
-First, we used the CCRL 40/15 Dataset containing 1 233 013 games where Whites win for 34.4%, Black win for 25.2% and draws are 40.5% of the dataset.Use this space to show useful examples of how a project can be used.
+
+* If you don't want to retrain the model:
+  You can play against Stockfish by running experiment.py
+  ```sh
+   python NeuralNetKeras/experiment.py 1 3 10
+  ```
+  Again, the first argument represents the stockfish level, the second represents the depth of our algorithm and the third argument represents the number of games to play.
+
+* If you want to retrain the model:
+  1. Download the data from [CCRL](http://ccrl.chessdom.com/ccrl/4040/) and uncompress the 7z file into the data folder
+  2. The first step is to generate the data
+  ```sh
+   python NeuralNetKeras/DataGenerator.py
+  ```
+  Once this step is over, you'll have two new files in your data folder: black.npy and white.npy
+  3. The second step is to train the autoencoder. (This step can be skipped if you want. We already save our encoder model)
+  ```sh
+   python NeuralNetKeras/AutoEncoder.py
+  ```
+  Once this is over, the encoder will be saved in your weights folder under the name DeepYed.h5 
+  4. Finally, the last step is to train the siamese.
+  ```sh
+   python NeuralNetKeras/SiameseNetwork.py
+  ```
+  Once this step is over, the siamese model will be saved in your model folder under the name model.h5
 
 ### Preprocessing
 We decided to go with a preprocessing inspired by the one used by the authors of DeepChess. Therefore, we first ignored all th draws since they apparently did not add any value. We just kept the wins and losses. We extracted 10 random moves per game while making sure these moves did not end in a capture from either sides.
