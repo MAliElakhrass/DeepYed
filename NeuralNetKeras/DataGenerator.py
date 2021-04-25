@@ -8,7 +8,7 @@ MAX_MOVES = 3000000
 
 
 class DataGenerator:
-    def __init__(self, data_path='./data/games_data.pgn'):
+    def __init__(self, data_path='NeuralNetKeras/data/games_data.pgn'):
         self.white_moves = np.zeros((MAX_MOVES, 2 * 6 * 64 + 5), dtype=np.int8)
         self.black_moves = np.zeros((MAX_MOVES, 2 * 6 * 64 + 5), dtype=np.int8)
         self.game = None
@@ -119,8 +119,8 @@ class DataGenerator:
 
         :return:
         """
-        np.save('./data/white.npy', self.white_moves)
-        np.save('./data/black.npy', self.black_moves)
+        np.save('NeuralNetKeras/data/white.npy', self.white_moves)
+        np.save('NeuralNetKeras/data/black.npy', self.black_moves)
 
 
 if __name__ == '__main__':
