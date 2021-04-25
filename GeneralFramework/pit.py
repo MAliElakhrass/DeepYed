@@ -1,11 +1,14 @@
-from Arena import Arena
-from MCTS import MCTS
-from chessgame.ChessGame import ChessGame
-from chessgame.ChessPlayers import *
-from chessgame.keras.NNet import NNetWrapper as NNet
-from utils import *
+import sys
+sys.path.append("../Projet/")
+from GeneralFramework.Arena import Arena
+from GeneralFramework.chessgame.ChessGame import ChessGame
+from GeneralFramework.chessgame.ChessPlayers import *
+from GeneralFramework.chessgame.keras.NNet import NNetWrapper as NNet
+from GeneralFramework.MCTS import MCTS
+from GeneralFramework.utils import *
 import numpy as np
 import sys
+
 
 if __name__ == '__main__':
     level = sys.argv[1] or 1

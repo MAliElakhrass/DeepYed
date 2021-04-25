@@ -1,10 +1,12 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-from utils import dotdict
+from GeneralFramework.chessgame.ChessGame import ChessGame
+from GeneralFramework.utils import dotdict
 from tensorflow.keras import Input
 from tensorflow.keras.layers import Activation, Add, BatchNormalization, Conv2D, Dense, Flatten, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.utils import plot_model
 
 
 class ChessNNet:
@@ -51,11 +53,12 @@ class ChessNNet:
         model = Model(inputs=input_boards, outputs=[pi, v])
         model.compile(loss=['categorical_crossentropy', 'mean_squared_error'], optimizer=Adam(self.args.lr))
 
+        plot_model(model, to_file='figures/model_full.png', show_shapes=True)
+
         return model
 
 
 if __name__ == '__main__':
-    from GeneralFramework.chessgame.ChessGame import ChessGame
     g = ChessGame(8)
     args = dotdict({
         'lr': 0.001,
@@ -66,4 +69,4 @@ if __name__ == '__main__':
     })
     nn = ChessNNet(g, args)
 
-    nn.model.save_weights('./best.h5')
+    # nn.model.save_weights('./best.h5')

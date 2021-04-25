@@ -1,7 +1,9 @@
-from Coach import Coach
-from chessgame.ChessGame import ChessGame as Game
-from chessgame.keras.NNet import NNetWrapper as nn
-from utils import *
+import sys
+sys.path.append("../../../Projet/")
+from GeneralFramework.Coach import Coach
+from GeneralFramework.chessgame.ChessGame import ChessGame as Game
+from GeneralFramework.chessgame.keras.NNet import NNetWrapper as nn
+from GeneralFramework.utils import *
 import coloredlogs
 import logging
 

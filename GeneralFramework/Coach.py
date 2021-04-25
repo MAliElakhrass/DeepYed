@@ -1,6 +1,6 @@
-from Arena import Arena
+from GeneralFramework.Arena import Arena
+from GeneralFramework.MCTS import MCTS
 from collections import deque
-from MCTS import MCTS
 from pickle import Pickler, Unpickler
 from random import shuffle
 from tqdm import tqdm

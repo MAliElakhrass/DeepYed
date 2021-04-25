@@ -1,7 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-from chessgame.keras.ChessNNet import ChessNNet as cnnet
-from utils import dotdict
+from GeneralFramework.chessgame.keras.ChessNNet import ChessNNet as cnnet
+from GeneralFramework.utils import dotdict
 import numpy as np
 
 
