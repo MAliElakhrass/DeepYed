@@ -1,9 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-from GeneralFramework.chessgame.keras.ChessNNet import ChessNNet as cnnet
-from GeneralFramework.NeuralNet import NeuralNet
-from GeneralFramework.utils import dotdict
-from tensorflow.keras.layers import Reshape
+from chessgame.keras.ChessNNet import ChessNNet as cnnet
+from utils import dotdict
 import numpy as np
 
 
@@ -11,7 +9,7 @@ import numpy as np
 NUMBER_SQUARES = 8
 
 
-class NNetWrapper(NeuralNet):
+class NNetWrapper:
     def __init__(self, game):
         super().__init__(game)
         self.game = game

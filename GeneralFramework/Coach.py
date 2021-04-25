@@ -1,15 +1,13 @@
-import logging
-import os
-import sys
+from Arena import Arena
 from collections import deque
+from MCTS import MCTS
 from pickle import Pickler, Unpickler
 from random import shuffle
-
-import numpy as np
 from tqdm import tqdm
-
-from GeneralFramework.Arena import Arena
-from GeneralFramework.MCTS import MCTS
+import logging
+import numpy as np
+import os
+import sys
 
 log = logging.getLogger(__name__)
 

@@ -1,6 +1,5 @@
 import logging
 import math
-
 import numpy as np
 
 EPS = 1e-8

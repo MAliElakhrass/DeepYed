@@ -168,6 +168,17 @@ At the end of each game, a pgn file will be created and you'll be able to watch 
       Once this step is over, the siamese model will be saved in your `/model` folder under the name `DeepYed.h5`
 
 ## Reinforcement learning
+  * If you don't want to retrain the model:
+    You can play against Stockfish by running experiment.py
+    ```sh
+    python3 GeneralFramework/pit.py 1 10
+    ```
+    The first argument represents the stockfish level, the second represents the number of games to play.
+  * If you want to retrain the model:
+      ```sh
+      python3 GeneralFramework/main.py
+      ```
+    
 
 <!-- ROADMAP -->
 ## Roadmap

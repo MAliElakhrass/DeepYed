@@ -1,6 +1,5 @@
-import logging
-
 from tqdm import tqdm
+import logging
 
 log = logging.getLogger(__name__)
 

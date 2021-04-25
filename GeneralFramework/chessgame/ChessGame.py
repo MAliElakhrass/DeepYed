@@ -1,4 +1,3 @@
-from GeneralFramework.Game import Game
 import chess
 import numpy as np
 
@@ -6,9 +5,8 @@ import numpy as np
 NUMBER_SQUARES = 8
 
 
-class ChessGame(Game):
+class ChessGame:
     def __init__(self, n):
-        super().__init__()
         self.n = n or NUMBER_SQUARES
 
     def getInitBoard(self):

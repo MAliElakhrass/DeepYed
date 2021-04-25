@@ -1,8 +1,8 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-from GeneralFramework.utils import dotdict
+from utils import dotdict
 from tensorflow.keras import Input
-from tensorflow.keras.layers import Activation, Add, BatchNormalization, Conv2D, Dense, Dropout, Flatten, Reshape
+from tensorflow.keras.layers import Activation, Add, BatchNormalization, Conv2D, Dense, Flatten, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers import Adam
 
