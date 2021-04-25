@@ -11,9 +11,12 @@ import sys
 
 
 if __name__ == '__main__':
-    level = sys.argv[1] or 1
-    number_games = sys.argv[2] or 10
-
+    if len(sys.argv) == 3:
+        level = int(sys.argv[1])
+        number_games = int(sys.argv[2])
+    else:
+        level = 1
+        number_games = 10
     # Set up
     g = ChessGame(8)
     stockish_player = StockfishPlayer(g, level).play

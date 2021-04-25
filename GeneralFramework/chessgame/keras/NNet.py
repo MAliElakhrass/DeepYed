@@ -11,7 +11,6 @@ NUMBER_SQUARES = 8
 
 class NNetWrapper:
     def __init__(self, game):
-        super().__init__(game)
         self.game = game
         self.args = dotdict({
             'lr': 0.001,

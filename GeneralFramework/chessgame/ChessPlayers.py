@@ -1,21 +1,25 @@
 from stockfish import Stockfish
+import chess
+import logging
+import random
+
+log = logging.getLogger(__name__)
 
 
 class StockfishPlayer:
     def __init__(self, game, level):
         self.game = game
         self.engine = Stockfish('engines/stockfish.exe', parameters={"Threads": 4, "Skill Level": level})
-        self.letters = {'a': 1, 'b': 2, 'c': 3, 'd': 4, 'e': 5, 'f': 6, 'g': 7, 'h': 8}
 
     def play(self, board):
         fen = board.fen()
         self.engine.set_fen_position(fen)
 
-        move = self.engine.get_best_move_time(100)
+        move_uci = chess.Move.from_uci(self.engine.get_best_move_time(100))
+        if move_uci not in list(board.legal_moves):
+            log.error("Wrong move chosen by Stockfish! Check code")
+            move_uci = random.choice(list(board.legal_moves))
 
-        x1 = self.letters[move[0]] - 1
-        x2 = self.letters[move[2]] - 1
-        y1 = int(move[1]) - 1
-        y2 = int(move[3]) - 1
+        action = move_uci.from_square * 64 + move_uci.to_square
 
-        return (8 * 8) * (8 * x1 + y1) + (8 * x2 + y2)
+        return action

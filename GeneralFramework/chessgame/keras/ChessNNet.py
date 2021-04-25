@@ -18,7 +18,7 @@ class ChessNNet:
         # Neural Net
         self.model = self.construct_graph()
 
-    def construct_graph(self):
+    def construct_graph(self, plot=False):
         input_boards = Input(name='input', shape=(self.board_x, self.board_y))
         x = Reshape([self.board_x, self.board_y, 1])(input_boards)
 
@@ -53,7 +53,8 @@ class ChessNNet:
         model = Model(inputs=input_boards, outputs=[pi, v])
         model.compile(loss=['categorical_crossentropy', 'mean_squared_error'], optimizer=Adam(self.args.lr))
 
-        plot_model(model, to_file='figures/model_full.png', show_shapes=True)
+        if plot:
+            plot_model(model, to_file='figures/model_full.png', show_shapes=True)
 
         return model
 
