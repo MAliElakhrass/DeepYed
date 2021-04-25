@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QApplication
-from Heuristic.MainWindow import MainWindow
+from MainWindow import MainWindow
 from stockfish import Stockfish
 import chess
 import chess.svg
@@ -7,6 +7,7 @@ import chess.pgn
 import chess.polyglot
 import chess.engine
 import datetime
+import sys
 
 # Piece Square Tables
 # Value from https://github.com/thomasahle/sunfish
@@ -76,7 +77,7 @@ class PlayChess:
         self.history = []
         self.board = chess.Board()
 
-    def play_engine(self, level=1, number_games=10):
+    def play_engine(self, level=1, depth=3, number_games=10):
         """
         This function will evaluate our agent against Stockfish
 
@@ -84,14 +85,14 @@ class PlayChess:
         :param level: Level of Stockfish
         :return:
         """
-        stockfish = Stockfish('engines/stockfish-12/stockfish.exe', parameters={"Threads": 4, "Skill Level": level})
+        stockfish = Stockfish('engines/stockfish.exe', parameters={"Threads": 4, "Skill Level": level})
 
         for i in range(number_games):
             game = chess.pgn.Game()
             game.headers["Event"] = "Evalutation DeepYed vs Stockfish"
             game.headers["Site"] = "My PC"
             game.headers["Date"] = str(datetime.datetime.now().date())
-            game.headers["Round"] = str(i)
+            game.headers["Round"] = str(i+1)
             game.headers["White"] = "DeepYed"
             game.headers["Black"] = 'Stockfish'
 
@@ -113,7 +114,7 @@ class PlayChess:
             game.headers["Result"] = str(self.board.result())
 
             print(game)
-            print(game, file=open(f"round_{i}.pgn", "w"), end="\n\n")
+            print(game, file=open(f"Heuristic/level_{level}_round_{i}.pgn", "w"), end="\n\n")
 
         self.show_board()
 
@@ -276,5 +277,9 @@ class PlayChess:
 
 
 if __name__ == "__main__":
+    level = int(sys.argv[1]) or 1
+    depth = int(sys.argv[2]) or 3
+    number_games = int(sys.argv[3]) or 10
+    
     player = PlayChess()
-    player.play_engine()
+    player.play_engine(level=level, depth=depth, number_games=number_games)
