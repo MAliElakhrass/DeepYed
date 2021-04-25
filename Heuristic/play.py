@@ -91,7 +91,7 @@ class PlayChess:
             game.headers["Event"] = "Evalutation DeepYed vs Stockfish"
             game.headers["Site"] = "My PC"
             game.headers["Date"] = str(datetime.datetime.now().date())
-            game.headers["Round"] = i
+            game.headers["Round"] = str(i)
             game.headers["White"] = "DeepYed"
             game.headers["Black"] = 'Stockfish'
 

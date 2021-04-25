@@ -113,7 +113,7 @@ class DeepYed:
         plt.title('Model accuracy')
         plt.ylabel('Accuracy')
         plt.xlabel('Epoch')
-        plt.legend(['Train', 'Test'], loc='upper left')
+        plt.legend(['Train', 'Val'], loc='upper left')
         plt.savefig('NeuralNetKeras/figures/accuracy_siamese.png')
         plt.show()
 
@@ -123,7 +123,7 @@ class DeepYed:
         plt.title('Model loss')
         plt.ylabel('Loss')
         plt.xlabel('Epoch')
-        plt.legend(['Train', 'Test'], loc='upper left')
+        plt.legend(['Train', 'Val'], loc='upper left')
         plt.savefig('NeuralNetKeras/figures/loss_siamese.png')
         plt.show()
 
