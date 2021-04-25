@@ -168,6 +168,7 @@ At the end of each game, a pgn file will be created and you'll be able to watch 
       Once this step is over, the siamese model will be saved in your `/model` folder under the name `DeepYed.h5`
 
 ## Reinforcement learning
+  For this part, we based our code 
   * If you don't want to retrain the model:
     You can play against Stockfish by running experiment.py
     ```sh
@@ -178,42 +179,11 @@ At the end of each game, a pgn file will be created and you'll be able to watch 
       ```sh
       python3 GeneralFramework/main.py
       ```
-    
-
-<!-- ROADMAP -->
-## Roadmap
-
-See the [open issues](https://github.com/othneildrew/Best-README-Template/issues) for a list of proposed features (and known issues).
-
-
-
-<!-- CONTRIBUTING -->
-## Contributing
-
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-
 
 <!-- LICENSE -->
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
-
-
-
-<!-- CONTACT -->
-## Contact
-
-Your Name - [@your_twitter](https://twitter.com/your_username) - email@example.com
-
-Project Link: [https://github.com/your_username/repo_name](https://github.com/your_username/repo_name)
-
 
 
 <!-- ACKNOWLEDGEMENTS -->
@@ -229,9 +199,6 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 * [Sticky Kit](http://leafo.net/sticky-kit)
 * [JVectorMap](http://jvectormap.com)
 * [Font Awesome](https://fontawesome.com)
-
-
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
