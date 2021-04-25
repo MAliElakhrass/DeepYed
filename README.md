@@ -63,10 +63,7 @@
     <li><a href="#heuristic-approach">Heuristic Approach</a></li>
     <li><a href="#neural-network">Neural Network</a></li>
     <li><a href="#reinforcement-learning">Heuristic Approach</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
     <li><a href="#acknowledgements">Acknowledgements</a></li>
   </ol>
 </details>
@@ -78,15 +75,12 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-This project is our take on building an automated chess player. We first started building an heuristic, a neural network and a reinforcement learning approach.
-Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should element DRY principles to the rest of your life :smile:
+Our goal was to evaluate and quantify the performance of various intelligent agent approaches applied to chess. We have explored three approaches to machine learning:
+  1. Tree traversal;
+  2. neural network;
+  3. Reinforcement learning approaches.
 
-Of course, no one template will serve all projects since your needs may be different. So I'll be adding more in the near future. You may also suggest changes by forking this repo and creating a pull request or opening an issue. Thanks to all the people have have contributed to expanding this template!
-
-A list of commonly used resources that I find helpful are listed in the acknowledgements.
+With the resources available, our best agent was our Negamax research agent, with an ELO of around 1300. The neural network approach produced an excellent agent for determining the best move mid-game, but not for a game. complete. Finally, our results for the reinforcement learning approach are comparable to those obtained initially by the opensource project Leela Zero, i.e. an ELO of around 900
 
 ### Built With
 
