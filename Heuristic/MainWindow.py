@@ -1,3 +1,6 @@
+"""
+This code was taken from : https://stackoverflow.com/a/61439875/9319274
+"""
 from PyQt5.QtSvg import QSvgWidget
 from PyQt5.QtWidgets import QWidget
 import chess
