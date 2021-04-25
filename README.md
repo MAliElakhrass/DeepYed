@@ -122,8 +122,8 @@ You should run one of the two commands in your terminal in order to install all 
    ```sh
    git clone https://github.com/MAliElakhrass/DeepYed.git
    ```
-2. Download the Stockfish engine from [https://stockfishchess.org/download/](https://stockfishchess.org/download/windows/) and place it under the engines folder
-3. Download the opening books from [https://rebel13.nl/download/books.html](https://rebel13.nl/download/books.html) and uncompress the content of the folder books under the books folder
+2. Download the Stockfish engine from [https://stockfishchess.org/download/](https://stockfishchess.org/download/windows/) and place it under the `/engines` folder
+3. Download the opening books from [https://rebel13.nl/download/books.html](https://rebel13.nl/download/books.html) and uncompress the content of the folder books under the `/books` folder
 
 ## Open a pgn file
 You can read a pgn file in any text editor. However, if you want to watch the game, you have to download a Graphical User Interface (GUI) for chess. We recommend Scid or Arena.
@@ -131,7 +131,7 @@ You can read a pgn file in any text editor. However, if you want to watch the ga
 ## Negamax approach
 For this approach there is nothing to train. In order to play this agent against Stockfish, run the following command in the command line
   ```sh
-   python Heuristic/play.py 1 3 10
+   python3 Heuristic/play.py 1 3 10
   ```
 The first argument represents the stockfish level, the second represents the depth of our algorithm and the third argument represents the number of games to play.
 
@@ -142,56 +142,31 @@ At the end of each game, a pgn file will be created and you'll be able to watch 
 * If you don't want to retrain the model:
   You can play against Stockfish by running experiment.py
   ```sh
-   python NeuralNetKeras/experiment.py 1 3 10
+   python3 NeuralNetKeras/experiment.py 1 3 10
   ```
   Again, the first argument represents the stockfish level, the second represents the depth of our algorithm and the third argument represents the number of games to play.
 
 * If you want to retrain the model:
-  1. Download the data from [CCRL](http://ccrl.chessdom.com/ccrl/4040/) and uncompress the 7z file into the data folder
+  1. Download the data from [CCRL](http://ccrl.chessdom.com/ccrl/4040/) and uncompress the 7z file into the `/data` folder
+  
   2. The first step is to generate the data
-  ```sh
-   python NeuralNetKeras/DataGenerator.py
-  ```
-  Once this step is over, you'll have two new files in your data folder: black.npy and white.npy
-  3. The second step is to train the autoencoder. (This step can be skipped if you want. We already save our encoder model)
-  ```sh
-   python NeuralNetKeras/AutoEncoder.py
-  ```
-  Once this is over, the encoder will be saved in your weights folder under the name DeepYed.h5 
+      ```sh
+      python3 NeuralNetKeras/DataGenerator.py
+      ```
+      Once this step is over, you'll have two new files in your `/data` folder: `black.npy` and `white.npy`
+  
+  3.  The second step is to train the autoencoder. (This step can be skipped if you want. We already save our encoder model)
+      ```sh
+      python3 NeuralNetKeras/AutoEncoder.py
+      ```
+      Once this is over, the encoder will be saved in your `/weights` folder under the name `encoder.h5` 
+  
   4. Finally, the last step is to train the siamese.
-  ```sh
-   python NeuralNetKeras/SiameseNetwork.py
-  ```
-  Once this step is over, the siamese model will be saved in your model folder under the name model.h5
+      ```sh
+        python3 NeuralNetKeras/SiameseNetwork.py
+      ```
+      Once this step is over, the siamese model will be saved in your `/model` folder under the name `DeepYed.h5`
 
-### Preprocessing
-We decided to go with a preprocessing inspired by the one used by the authors of DeepChess. Therefore, we first ignored all th draws since they apparently did not add any value. We just kept the wins and losses. We extracted 10 random moves per game while making sure these moves did not end in a capture from either sides.
-Also, these moves were not one of the first five. Each move was represented by the state of the board with the actual move in it. The board was encoded into a 773 binary bit-string array called bitboard. 
-This amount of bits is obtained by taking in consideration the two sides (White and Black), the 6 types of pieces (queen, king, pawn, bishop rook and knight),
-the 64 squares on a board (8 x 8) and the five last bits are for the side to move (White's turn or Black's) and the castling rights. 
-Indeed, the last 4 bits indicate if the Whites can castle kingside, if the Whites can castle queenside, if the Blacks can castle kingside and if the Blacks can castle queenside.
-
-### Implementation 
-Our neural network has two parts, the autoencoder part and a siamese network. The autoencoder consists of five fully connected layers 773-600-400-200-100. First, we added batch normalisation layers
-and a Leaky Relu activation function because it got better than the official implmentation of DeepChess which did not have any regularization and the activation functions were ReLU. 
-The learning rate used is 0.005 and it was multiplied by 0.98 after each epoch like indicated by the authors of DeepChess. The autoencoder was trained for 200 epochs. The results were not very good for this
-first architecture. The autoencoder seemed to overfit after 7 epochs. Therefore, we tried another architecture which used DenseTied layers. BLA BLA BLA
-
-The Siamese network had to take two inputs. One input would be a a move from a win and one move that ended up in a loss. Two bitboards are passed to the trained encoder of the autoencoder to extract important features.
-The two obtained representations  have 100 features each. The architecture used is 400-200-100-2. The loss used to train this part is the binary cross entropy.
-
-### Results
-The results were not as expected. We first tried to implement a similar architecture to the one presented in the paper of DeepChess. The autoencoder was composed of an encoder of linear four layers
-of 773-600-400-200. The decoder had the following architecture 200-400-600-773 to rebuild the input. All the activation functions used between each layer is a ReLU function and the last activation function is 
-a Sigmoid function. The siamese network used had four linear layers with the following dimensions 200-400-200-100. For this part, ReLU was used as activation function and sigmoid for the last layer. The results were very bad
-with an accuracy of 50%. Then we tried adding some batch normalisation between each layers and changed the activation function to Leaky ReLU and obtained an accuracy of 58% which was better but still very bad. We tried several other
-architecture changing the learning rates, the number of features per layer, the error used but the score was still very bad.
-
-_For more details about DeepChess, please refer to the [Paper](https://arxiv.org/pdf/1711.09667.pdf)_
-
-_For more details about the CCRL 40/15 Dataset, please refer to this [Website](https://ccrl.chessdom.com/ccrl/4040/)_
-
-<!-- USAGE EXAMPLES -->
 ## Reinforcement learning
 
 <!-- ROADMAP -->
