@@ -7,45 +7,46 @@ import chess
 import chess.pgn
 import chess.polyglot
 import numpy as np
+import sys
 
 
 class Experiment:
     def __init__(self):
         self.deepyed = load_model('NeuralNetKeras/model/DeepYed.h5')
 
-    def play_against_stockfish(self):
-        stockfish = Stockfish('engines/stockfish-12/stockfish.exe',
-                              parameters={"Threads": 4, "Skill Level": 1})
+    def play_against_stockfish(self, level=1, depth=3, number_games=10):
+        stockfish = Stockfish('engines/stockfish.exe',
+                              parameters={"Threads": 4, "Skill Level": level})
 
-        game = chess.pgn.Game()
-        game.headers["Event"] = "DeepYed vs Stockfish"
-        game.headers["Site"] = "Hammad's PC"
-        game.headers["Date"] = str(datetime.now().date())
-        game.headers["Round"] = '1'
-        game.headers["White"] = "DeepYed"
-        game.headers["Black"] = 'Stockfish'
+        for i in range(number_games):
+            game = chess.pgn.Game()
+            game.headers["Event"] = "Evalutation DeepYed vs Stockfish (Neural Net)"
+            game.headers["Site"] = "My PC"
+            game.headers["Date"] = str(datetime.now().date())
+            game.headers["Round"] = str(i+1)
+            game.headers["White"] = "DeepYed"
+            game.headers["Black"] = 'Stockfish'
 
-        board = chess.Board(fen='rnb2rk1/ppp2pp1/4pq1p/8/1bpP4/2N1PN2/PP3PPP/2RQKB1R w K - 0 9')
-        history = []
-        while not board.is_game_over():
-            if board.turn:
-                print("DeepYed's Turn")
-                _, move = self.alphabeta(board, 1, -100, 100, True, board)
-                history.append(move)
-                board.push(move)
-                print(move)
-            else:
-                print("Stockfish's Turn")
-                move = chess.Move.from_uci(self.get_move_stockfish(board, stockfish))
-                history.append(move)
-                board.push(move)
-                print(move)
+            board = chess.Board()
+            history = []
+            while not board.is_game_over():
+                if board.turn:
+                    print("DeepYed's Turn")
+                    _, move = self.alphabeta(board, depth, -100, 100, True, board)
+                    history.append(move)
+                    board.push(move)
+                    print(move)
+                else:
+                    print("Stockfish's Turn")
+                    move = chess.Move.from_uci(self.get_move_stockfish(board, stockfish))
+                    history.append(move)
+                    board.push(move)
+                    print(move)
 
-        game.add_line(history)
-        game.headers["Result"] = str(board.result())
+            game.add_line(history)
+            game.headers["Result"] = str(board.result())
 
-        print(game)
-        print(game, file=open("test.pgn", "w"), end="\n\n")
+            print(game, file=open(f"NeuralNetKeras/level_{level}_round_{i+1}.pgn", "w"), end="\n\n")
 
     def get_bitboard(self, board):
         """
@@ -86,50 +87,46 @@ class Experiment:
         return self.apply_siamese_network(bitboard_1, bitboard_2)[0][0]
 
     def alphabeta(self, board, depth, alpha, beta, white, orig_board):
-        """
         try:
-            move = chess.polyglot.MemoryMappedReader('./books/Perfect2017-SF12.bin').weighted_choice(
-                board=orig_board).move
+            move = chess.polyglot.MemoryMappedReader('./books/Perfect2017-SF12.bin')\
+                .weighted_choice(board=orig_board).move
             return None, move
         except:
-        """
-        if depth == 0:
-            yed = self.compare_moves(board, orig_board)
-            return yed, None
-        if white:
-            v = -100  # very (relatively) small number
-            moves = board.generate_legal_moves()
-            moves = list(moves)
-            best_move = None
-            for move in moves:
-                new_board = board.copy()
-                new_board.push(move)
-                candidate_v, _ = self.alphabeta(new_board, depth - 1, alpha, beta, False, orig_board)
-                if candidate_v >= v:
-                    v = candidate_v
-                    best_move = move
-                alpha = max(alpha, v)
-                if beta <= alpha:
-                    break
-            return v, best_move
-        else:
-            v = 100  # very (relatively) large number
-            moves = board.generate_legal_moves()
-            moves = list(moves)
-            best_move = None
-            for move in moves:
-                new_board = board.copy()
-                new_board.push(move)
-                candidate_v, _ = self.alphabeta(new_board, depth - 1, alpha, beta, True, orig_board)
-                if candidate_v <= v:
-                    v = candidate_v
-                    best_move = move
-                else:
-                    pass
-                beta = min(beta, v)
-                if beta <= alpha:
-                    break
-            return v, best_move
+            if depth == 0:
+                yed = self.compare_moves(board, orig_board)
+                return yed, None
+            if white:
+                v = -100
+                moves = list(board.generate_legal_moves())
+                best_move = None
+                for move in moves:
+                    new_board = board.copy()
+                    new_board.push(move)
+                    candidate_v, _ = self.alphabeta(new_board, depth - 1, alpha, beta, False, orig_board)
+                    if candidate_v >= v:
+                        v = candidate_v
+                        best_move = move
+                    alpha = max(alpha, v)
+                    if beta <= alpha:
+                        break
+                return v, best_move
+            else:
+                v = 100
+                moves = list(board.generate_legal_moves())
+                best_move = None
+                for move in moves:
+                    new_board = board.copy()
+                    new_board.push(move)
+                    candidate_v, _ = self.alphabeta(new_board, depth - 1, alpha, beta, True, orig_board)
+                    if candidate_v <= v:
+                        v = candidate_v
+                        best_move = move
+                    else:
+                        pass
+                    beta = min(beta, v)
+                    if beta <= alpha:
+                        break
+                return v, best_move
 
     @staticmethod
     def get_move_stockfish(board, stockfish):
@@ -140,5 +137,9 @@ class Experiment:
 
 
 if __name__ == '__main__':
+    level = int(sys.argv[1]) or 1
+    depth = int(sys.argv[2]) or 3
+    number_games = int(sys.argv[3]) or 10
+
     experiment = Experiment()
-    experiment.play_against_stockfish()
+    experiment.play_against_stockfish(level=level, depth=depth, number_games=number_games)

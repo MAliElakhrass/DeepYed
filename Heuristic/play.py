@@ -99,7 +99,7 @@ class PlayChess:
             while not self.board.is_game_over():
                 if self.board.turn:
                     print("DeepYed's Turn")
-                    move = self.select_move(depth=3)
+                    move = self.select_move(depth=depth)
                     self.history.append(move)
                     self.board.push(move)
                     print(move)
@@ -114,7 +114,7 @@ class PlayChess:
             game.headers["Result"] = str(self.board.result())
 
             print(game)
-            print(game, file=open(f"Heuristic/level_{level}_round_{i}.pgn", "w"), end="\n\n")
+            print(game, file=open(f"Heuristic/level_{level}_round_{i+1}.pgn", "w"), end="\n\n")
 
         self.show_board()
 
