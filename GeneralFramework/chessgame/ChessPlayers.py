@@ -9,7 +9,7 @@ log = logging.getLogger(__name__)
 class StockfishPlayer:
     def __init__(self, game, level):
         self.game = game
-        self.engine = Stockfish('engines/stockfish.exe', parameters={"Threads": 4, "Skill Level": level})
+        self.engine = Stockfish('engines/stockfish', parameters={"Threads": 4, "Skill Level": level})
 
     def play(self, board):
         fen = board.fen()

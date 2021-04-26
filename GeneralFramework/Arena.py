@@ -1,3 +1,5 @@
+import chess
+import chess.pgn
 from tqdm import tqdm
 import logging
 
@@ -38,7 +40,7 @@ class Arena():
         """
         players = [self.player2, None, self.player1]
         curPlayer = 1
-        board = self.game.getInitBoard()
+        board: chess.Board = self.game.getInitBoard()
         it = 0
         while self.game.getGameEnded(board, curPlayer) == 0:
             it += 1
@@ -59,6 +61,9 @@ class Arena():
             assert self.display
             print("Game over: Turn ", str(it), "Result ", str(self.game.getGameEnded(board, 1)))
             self.display(board)
+        game = chess.pgn.Game.from_board(board)
+        print(game, file=open(f"./game.pgn", "w"), end="\n\n")
+
         return curPlayer * self.game.getGameEnded(board, curPlayer)
 
     def playGames(self, num, verbose=False):
@@ -72,7 +77,7 @@ class Arena():
             draws:  games won by nobody
         """
 
-        num = int(num / 2)
+        # num = int(num / 2)
         oneWon = 0
         twoWon = 0
         draws = 0
@@ -82,18 +87,6 @@ class Arena():
             if gameResult == 1:
                 oneWon += 1
             elif gameResult == -1:
-                twoWon += 1
-            else:
-                draws += 1
-
-        self.player1, self.player2 = self.player2, self.player1
-
-        for _ in tqdm(range(num), desc="Arena.playGames (2)"):
-            gameResult = self.playGame(verbose=verbose)
-
-            if gameResult == -1:
-                oneWon += 1
-            elif gameResult == 1:
                 twoWon += 1
             else:
                 draws += 1

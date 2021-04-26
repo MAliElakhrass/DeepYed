@@ -1,5 +1,7 @@
+#! /bin/bash
+
 import sys
-sys.path.append("../Projet/")
+sys.path.append("../DeepYed/")
 from GeneralFramework.Arena import Arena
 from GeneralFramework.chessgame.ChessGame import ChessGame
 from GeneralFramework.chessgame.ChessPlayers import *
