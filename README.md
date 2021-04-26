@@ -26,10 +26,6 @@
   </a>
 
   <h3 align="center">Final project 6756</h3>
-
-  <p align="center">
-    An awesome README template to jumpstart your projects!
-  </p>
 </p>
 
 
