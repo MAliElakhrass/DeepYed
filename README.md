@@ -66,7 +66,7 @@ Our goal was to evaluate and quantify the performance of various intelligent age
   2. neural network;
   3. Reinforcement learning approaches.
 
-With the resources available, our best agent was our Negamax research agent, with an ELO of around 1300. The neural network approach produced an excellent agent for determining the best move mid-game, but not for a game. complete. Finally, our results for the reinforcement learning approach are comparable to those obtained initially by the opensource project Leela Zero, i.e. an ELO of around 900
+With the resources available, our best agent was our Negamax research agent, with an ELO of around 1300. The neural network approach produced an excellent agent for determining the best move mid-game, but not for a game. complete. Finally, our results for the reinforcement learning approach are comparable to those obtained initially by the opensource project Leela Zero, i.e. an ELO of around 500
 
 ### Built With
 
