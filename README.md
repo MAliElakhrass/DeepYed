@@ -60,7 +60,6 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 Our goal was to evaluate and quantify the performance of various intelligent agent approaches applied to chess. We have explored three approaches to machine learning:
   1. Tree traversal;
