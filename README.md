@@ -148,7 +148,7 @@ At the end of each game, a pgn file will be created and you'll be able to watch 
       Once this step is over, the siamese model will be saved in your `/model` folder under the name `DeepYed.h5`
 
 ## Reinforcement learning
-  For this part, we based our code 
+  For this part, we based our code from the AlphaZero General Framework available from [AlphaZero General Framework] (https://github.com/suragnair/alpha-zero-general)
   * If you don't want to retrain the model:
     You can play against Stockfish by running experiment.py
     ```sh

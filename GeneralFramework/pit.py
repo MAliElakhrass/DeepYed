@@ -25,7 +25,7 @@ if __name__ == '__main__':
     nn = NNet(g)
     nn.load_checkpoint(folder='GeneralFramework/training', filename='best.h5')
 
-    args1 = dotdict({'numMCTSSims': 50, 'cpuct': 1.0})
+    args1 = dotdict({'numMCTSSims': 100, 'cpuct': 1.0})
     mcts1 = MCTS(g, nn, args1)
     n1p = lambda x: np.argmax(mcts1.getActionProb(x, temp=0))
 
