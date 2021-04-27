@@ -26,10 +26,6 @@
   </a>
 
   <h3 align="center">Final project 6756</h3>
-
-  <p align="center">
-    An awesome README template to jumpstart your projects!
-  </p>
 </p>
 
 
@@ -64,14 +60,13 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 Our goal was to evaluate and quantify the performance of various intelligent agent approaches applied to chess. We have explored three approaches to machine learning:
   1. Tree traversal;
   2. neural network;
   3. Reinforcement learning approaches.
 
-With the resources available, our best agent was our Negamax research agent, with an ELO of around 1300. The neural network approach produced an excellent agent for determining the best move mid-game, but not for a game. complete. Finally, our results for the reinforcement learning approach are comparable to those obtained initially by the opensource project Leela Zero, i.e. an ELO of around 900
+With the resources available, our best agent was our Negamax research agent, with an ELO of around 1300. The neural network approach produced an excellent agent for determining the best move mid-game, but not for a game. complete. Finally, our results for the reinforcement learning approach are comparable to those obtained initially by the opensource project Leela Zero, i.e. an ELO of around 500
 
 ### Built With
 
