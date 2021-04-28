@@ -1,5 +1,5 @@
-from GeneralFramework.Arena import Arena
-from GeneralFramework.MCTS import MCTS
+from ReinforcementLearning.Arena import Arena
+from ReinforcementLearning.MCTS import MCTS
 from collections import deque
 from pickle import Pickler, Unpickler
 from random import shuffle

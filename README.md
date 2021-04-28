@@ -152,12 +152,12 @@ At the end of each game, a pgn file will be created and you'll be able to watch 
   * If you don't want to retrain the model:
     You can play against Stockfish by running experiment.py
     ```sh
-    python3 GeneralFramework/pit.py 1 10
+    python3 ReinforcementLearning/pit.py 1 10
     ```
     The first argument represents the stockfish level, the second represents the number of games to play.
   * If you want to retrain the model:
       ```sh
-      python3 GeneralFramework/main.py
+      python3 ReinforcementLearning/main.py
       ```
 
 <!-- LICENSE -->

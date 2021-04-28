@@ -142,6 +142,4 @@ NeuralNetKeras/model/
 
 NeuralNetKeras/weights/
 
-ReinforcementLearning/model_data/
-
-GeneralFramework/training/
+ReinforcementLearning/training/

@@ -2,12 +2,12 @@
 
 import sys
 sys.path.append("../DeepYed/")
-from GeneralFramework.Arena import Arena
-from GeneralFramework.chessgame.ChessGame import ChessGame
-from GeneralFramework.chessgame.ChessPlayers import *
-from GeneralFramework.chessgame.keras.NNet import NNetWrapper as NNet
-from GeneralFramework.MCTS import MCTS
-from GeneralFramework.utils import *
+from ReinforcementLearning.Arena import Arena
+from ReinforcementLearning.chessgame.ChessGame import ChessGame
+from ReinforcementLearning.chessgame.ChessPlayers import *
+from ReinforcementLearning.chessgame.keras.NNet import NNetWrapper as NNet
+from ReinforcementLearning.MCTS import MCTS
+from ReinforcementLearning.utils import *
 import numpy as np
 import sys
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     g = ChessGame(8)
     stockish_player = StockfishPlayer(g, level).play
     nn = NNet(g)
-    nn.load_checkpoint(folder='GeneralFramework/training', filename='best.h5')
+    nn.load_checkpoint(folder='ReinforcementLearning/training', filename='best.h5')
 
     args1 = dotdict({'numMCTSSims': 100, 'cpuct': 1.0})
     mcts1 = MCTS(g, nn, args1)

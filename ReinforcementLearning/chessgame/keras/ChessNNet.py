@@ -1,7 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-from GeneralFramework.chessgame.ChessGame import ChessGame
-from GeneralFramework.utils import dotdict
+from ReinforcementLearning.chessgame.ChessGame import ChessGame
+from ReinforcementLearning.utils import dotdict
 from tensorflow.keras import Input
 from tensorflow.keras.layers import Activation, Add, BatchNormalization, Conv2D, Dense, Flatten, Reshape
 from tensorflow.keras.models import Model

@@ -1,7 +1,7 @@
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-from GeneralFramework.chessgame.keras.ChessNNet import ChessNNet as cnnet
-from GeneralFramework.utils import dotdict
+from ReinforcementLearning.chessgame.keras.ChessNNet import ChessNNet as cnnet
+from ReinforcementLearning.utils import dotdict
 import numpy as np
 
 

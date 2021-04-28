@@ -1,9 +1,9 @@
 import sys
-sys.path.append("../../../Projet/")
-from GeneralFramework.Coach import Coach
-from GeneralFramework.chessgame.ChessGame import ChessGame as Game
-from GeneralFramework.chessgame.keras.NNet import NNetWrapper as nn
-from GeneralFramework.utils import *
+sys.path.append("../../../DeepYed/")
+from ReinforcementLearning.Coach import Coach
+from ReinforcementLearning.chessgame.ChessGame import ChessGame as Game
+from ReinforcementLearning.chessgame.keras.NNet import NNetWrapper as nn
+from ReinforcementLearning.utils import *
 import coloredlogs
 import logging
 
